@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1440px" height="487px" viewBox="0 0 1440 487" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Pattern Perspective</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="1445" height="484"></rect>
+        <polygon id="path-3" points="0.390042731 0.3488 1727.88978 0.3488 1727.88978 2.02549949 0.390042731 2.02549949"></polygon>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-5">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="100%" y1="42.6794414%" x2="77.9801363%" y2="42.6794414%" id="linearGradient-6">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-7">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Landing-Page" transform="translate(0.000000, -3729.000000)">
+            <g id="Pattern-Perspective" transform="translate(-5.000000, 3729.000000)">
+                <g id="Group-29">
+                    <g id="Group-20">
+                        <g id="Group-26">
+                            <g id="Group-65">
+                                <mask id="mask-2" fill="white">
+                                    <use xlink:href="#path-1"></use>
+                                </mask>
+                                <g id="Mask"></g>
+                                <g opacity="0.571056548" mask="url(#mask-2)">
+                                    <g transform="translate(-2464.000000, 22.000000)">
+                                        <g id="Group-54" stroke="none" stroke-width="1" fill-rule="evenodd">
+                                            <line x1="0.0879078947" y1="435.449075" x2="2715.19593" y2="0.90688" id="Stroke-1" stroke="#162647" stroke-width="0.5"></line>
+                                            <line x1="297.549658" y1="435.449075" x2="2786.40111" y2="0.90688" id="Stroke-3" stroke="#162647" stroke-width="0.5"></line>
+                                            <line x1="595.011632" y1="435.449075" x2="2857.60203" y2="0.90688" id="Stroke-5" stroke="#162647" stroke-width="0.5"></line>
+                                            <line x1="892.472263" y1="435.449075" x2="2928.80384" y2="0.90688" id="Stroke-7" stroke="#162647" stroke-width="0.5"></line>
+                                            <line x1="1189.93289" y1="435.449075" x2="3000.00566" y2="0.90688" id="Stroke-9" stroke="#162647" stroke-width="0.5"></line>
+                                            <line x1="1487.39576" y1="435.449075" x2="3071.20971" y2="0.90688" id="Stroke-11" stroke="#162647" stroke-width="0.5"></line>
+                                            <line x1="1784.85639" y1="435.449075" x2="3142.40929" y2="0.90688" id="Stroke-13" stroke="#162647" stroke-width="0.5"></line>
+                                            <line x1="2082.31703" y1="435.449075" x2="3213.61334" y2="0.90688" id="Stroke-15" stroke="#162647" stroke-width="0.5"></line>
+                                            <line x1="2379.77766" y1="435.449075" x2="3284.81516" y2="0.90688" id="Stroke-17" stroke="#49BAD5" stroke-width="0.5"></line>
+                                            <line x1="2677.24053" y1="435.449075" x2="3356.01697" y2="0.90688" id="Stroke-19" stroke="#49BAD5" stroke-width="0.5"></line>
+                                            <line x1="2974.70138" y1="435.449075" x2="3427.22125" y2="0.90688" id="Stroke-21" stroke="#55BBD8" stroke-width="0.5"></line>
+                                            <line x1="3272.16201" y1="435.449075" x2="3498.42083" y2="0.90688" id="Stroke-23" stroke="#55BBD8" stroke-width="0.5"></line>
+                                            <line x1="3569.62488" y1="435.449075" x2="3569.62488" y2="0.90688" id="Stroke-25" stroke="#55BBD8" stroke-width="0.5"></line>
+                                            <line x1="3867.08551" y1="435.449075" x2="3640.8267" y2="0.90688" id="Stroke-27" stroke="#55BBD8" stroke-width="0.5"></line>
+                                            <line x1="4164.54614" y1="435.449075" x2="3712.02851" y2="0.90688" id="Stroke-29" stroke="#55BBD8" stroke-width="0.5"></line>
+                                            <line x1="4462.00901" y1="435.449075" x2="3783.23033" y2="0.90688" id="Stroke-31" stroke="#55BBD8" stroke-width="0.5"></line>
+                                            <line x1="4759.46964" y1="435.449075" x2="3854.43438" y2="0.90688" id="Stroke-33" stroke="#55BBD8" stroke-width="0.5"></line>
+                                            <g id="Group-53" transform="translate(2707.744852, 0.000000)">
+                                                <mask id="mask-4" fill="white">
+                                                    <use xlink:href="#path-3"></use>
+                                                </mask>
+                                                <g id="Clip-52"></g>
+                                            </g>
+                                        </g>
+                                        <line x1="2709" y1="10.5" x2="4437" y2="10.5" id="Stroke-55" stroke="#55BBD8" stroke-width="0.5"></line>
+                                        <line x1="2709" y1="30.5" x2="4437" y2="30.5" id="Stroke-56" stroke="#55BBD8" stroke-width="0.5"></line>
+                                        <line x1="2709" y1="54.5" x2="4437" y2="54.5" id="Stroke-57" stroke="#55BBD8" stroke-width="0.5"></line>
+                                        <line x1="2709" y1="81.5" x2="4437" y2="81.5" id="Stroke-58" stroke="#55BBD8" stroke-width="0.5"></line>
+                                        <line x1="2709" y1="116.5" x2="4437" y2="116.5" id="Stroke-59" stroke="#55BBD8" stroke-width="0.5"></line>
+                                        <line x1="2709" y1="153.5" x2="4437" y2="153.5" id="Stroke-60" stroke="#55BBD8" stroke-width="0.5"></line>
+                                        <line x1="2709" y1="202.5" x2="4437" y2="202.5" id="Stroke-61" stroke="#55BBD8" stroke-width="0.5"></line>
+                                        <line x1="2709" y1="253.5" x2="4437" y2="253.5" id="Stroke-62" stroke="#55BBD8" stroke-width="0.5"></line>
+                                        <line x1="2709" y1="326.5" x2="4437" y2="326.5" id="Stroke-63" stroke="#55BBD8" stroke-width="0.5"></line>
+                                        <line x1="2709" y1="411.5" x2="4437" y2="411.5" id="Stroke-64" stroke="#55BBD8" stroke-width="0.5"></line>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                        <rect id="Rectangle" fill="url(#linearGradient-5)" x="574" y="233" width="870" height="254"></rect>
+                        <rect id="Rectangle" fill="url(#linearGradient-6)" x="5" y="0" width="843" height="484"></rect>
+                        <rect id="Rectangle" fill="url(#linearGradient-7)" x="679" y="8" width="801" height="86"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

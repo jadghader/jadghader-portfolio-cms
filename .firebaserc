@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "jadghader-portfolio"
+  },
+  "targets": {
+    "jadghader-portfolio": {
+      "hosting": {
+        "dev": [
+          "jadghader-stage"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
