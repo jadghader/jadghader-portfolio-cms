@@ -7,9 +7,7 @@ import React, {
 } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../firebase";
-import Cookies from "js-cookie"; // Import js-cookie for managing cookies
-
-// Define the type for AuthContext
+import Cookies from "js-cookie";
 interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
@@ -17,7 +15,6 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// Create the AuthContext with default values
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isAdmin: false,
@@ -25,7 +22,6 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
 });
 
-// Define the props for the AuthProvider, including `children`
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -44,7 +40,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const adminStatus = !!token.claims?.admin; // Ensure it's a boolean
         setIsAdmin(adminStatus);
 
-        // Store token and admin status securely in cookies
         Cookies.set("authToken", token.token, {
           expires: 7,
           secure: true,
@@ -58,10 +53,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         setIsAdmin(false);
       }
-
       setIsLoading(false);
     });
-
     return unsubscribe;
   }, []);
 
@@ -80,5 +73,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-// Custom hook for using AuthContext
 export const useAuth = () => useContext(AuthContext);

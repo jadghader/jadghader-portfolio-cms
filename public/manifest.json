@@ -1,15 +1,21 @@
 {
-  "short_name": "Jad Ghader",
-  "name": "Jad Ghader - Portfolio",
+  "short_name": "Jad Ghader | Portfolio",
+  "name": "Jad Ghader | Portfolio",
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "sizes": "128x128",
       "type": "image/x-icon"
+    },
+    {
+      "src": "apple-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
     }
   ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "description": "Welcome to my portfolio! Check it."
 }

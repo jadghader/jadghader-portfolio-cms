@@ -6,17 +6,44 @@ interface ButtonProps {
   onClick: () => void;
   children: React.ReactNode;
   icon?: React.ReactNode;
+  size?: "small" | "medium" | "large"; // Allows different button sizes
+  fontSize?: string; // Custom font size
+  padding?: string; // Custom padding
+  borderRadius?: string; // Custom border radius
 }
 
 const ButtonContainer = styled.button<ButtonProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 24px;
-  font-size: 16px;
+  padding: ${({ padding, size }) => {
+    if (padding) return padding; // Use custom padding if provided
+    switch (size) {
+      case "small":
+        return "8px 16px"; // Default small padding
+      case "large":
+        return "16px 32px"; // Default large padding
+      case "medium":
+      default:
+        return "12px 24px"; // Default medium padding
+    }
+  }};
+  font-size: ${({ fontSize, size }) => {
+    if (fontSize) return fontSize; // Use custom font size if provided
+    switch (size) {
+      case "small":
+        return "14px"; // Default small font size
+      case "large":
+        return "18px"; // Default large font size
+      case "medium":
+      default:
+        return "16px"; // Default medium font size
+    }
+  }};
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: ${({ borderRadius }) =>
+    borderRadius || "8px"}; // Custom border radius if provided
   cursor: pointer;
   background-color: ${({ theme }) => theme.primary};
   color: ${({ theme }) => theme.background};
@@ -36,9 +63,23 @@ const ButtonContainer = styled.button<ButtonProps>`
   }
 `;
 
-const Button: React.FC<ButtonProps> = ({ onClick, children, icon }) => {
+const Button: React.FC<ButtonProps> = ({
+  onClick,
+  children,
+  icon,
+  size = "medium", // Default to medium size if not provided
+  fontSize,
+  padding,
+  borderRadius,
+}) => {
   return (
-    <ButtonContainer onClick={onClick}>
+    <ButtonContainer
+      onClick={onClick}
+      size={size}
+      fontSize={fontSize}
+      padding={padding}
+      borderRadius={borderRadius}
+    >
       {icon && icon}
       {children}
     </ButtonContainer>

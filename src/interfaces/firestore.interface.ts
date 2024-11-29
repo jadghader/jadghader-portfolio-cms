@@ -1,43 +1,38 @@
-// DocumentContent interface for the entire document structure
-export interface DocumentContent {
-  id: string;
-  heroSection: HeroSection;
-  workExperience: WorkExperience[];
-  projects: Project[];
-  skillsCategory: SkillsCategory[];
+export interface skills {
+  icon: string;
+  name: string;
 }
-
-// Individual section interfaces
-export interface HeroSection {
-  heroText: string;
-  infoText: string;
-  socialLinks: SocialLink[];
+export interface skillsData {
+  category: string;
+  skills: skills[];
 }
-
-export interface SocialLink {
+export interface skillsSection {
+  skillsData: skillsData[];
+}
+export interface projectsData {
+  description: string;
+  image: string;
+  title: string;
+}
+export interface projectSection {
+  projects: projectsData[];
+}
+export interface socialLinks {
   name: string;
   url: string;
 }
 
-export interface WorkExperience {
-  title: string;
+export interface heroSection {
+  heroText: string;
+  infoText: string;
+  socialLinks: socialLinks[];
+}
+export interface workExperienceData {
   company: string;
+  description: string;
   location: string;
-  description: string;
-}
-
-export interface Project {
   title: string;
-  description: string;
-  image: string;
 }
-
-export interface Skill {
-  icon: string;
-  name: string;
-}
-
-export interface SkillsCategory {
-  category: string;
-  skills: Skill[];
+export interface experienceSection {
+  workExperienceData: workExperienceData[];
 }

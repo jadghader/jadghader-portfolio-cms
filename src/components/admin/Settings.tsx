@@ -1,384 +1,336 @@
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import styled from "styled-components";
-import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
-import { db } from "../../firebase";
-import { useAuth } from "../../context/AuthContext";
-import { Logout } from "@mui/icons-material"; // Material UI logout icon
+import { getData, updateData } from "../../firebase/firestore";
 import {
-  CircularProgress,
-  Typography,
-  IconButton,
-  Button,
-  TextField,
-} from "@mui/material";
-import { DocumentContent } from "../../interfaces/firestore.interface";
+  experienceSection,
+  skillsSection,
+  heroSection,
+  projectSection,
+} from "../../interfaces/firestore.interface";
+import styled from "styled-components";
+
+// Styled components for a modern UI/UX
+const SettingsWrapper = styled.div`
+  padding: 30px;
+  background-color: #f8f9fa;
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+`;
+
+const SectionCard = styled.div`
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 800px;
+`;
+
+const InputField = styled.input`
+  padding: 10px;
+  margin: 10px 0;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+`;
+
+const Button = styled.button`
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const ToggleSection = styled.div`
+  margin-top: 20px;
+`;
 
 const Settings: React.FC = () => {
-  const { user, isAdmin, isLoading, logout } = useAuth();
-  const [documents, setDocuments] = useState<DocumentContent[]>([]);
-  const [selectedDoc, setSelectedDoc] = useState<DocumentContent | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [experience, setExperience] = useState<experienceSection | null>(null);
+  const [skills, setSkills] = useState<skillsSection | null>(null);
+  const [hero, setHero] = useState<heroSection | null>(null);
+  const [projects, setProjects] = useState<projectSection | null>(null);
 
-  // Fetch all documents from Firestore collection
+  const [newExperience, setNewExperience] = useState({
+    company: "",
+    description: "",
+    location: "",
+    title: "",
+  });
+
+  const [newHeroText, setNewHeroText] = useState<string>("");
+  const [newProject, setNewProject] = useState({
+    title: "",
+    description: "",
+    link: "",
+  });
+
+  const [showExperience, setShowExperience] = useState<boolean>(true);
+  const [showSkills, setShowSkills] = useState<boolean>(true);
+  const [showHero, setShowHero] = useState<boolean>(true);
+  const [showProjects, setShowProjects] = useState<boolean>(true);
+
   useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "homePage"));
-        const docs: DocumentContent[] = [];
-        querySnapshot.forEach((doc) => {
-          docs.push({ id: doc.id, ...doc.data() } as DocumentContent);
-        });
-        setDocuments(docs);
-        setSelectedDoc(docs[0] || null); // Default to the first document
-      } catch (err) {
-        setError("Failed to fetch content. Please try again.");
-      }
+    const fetchData = async () => {
+      const experienceData = await getData("homePage", "experienceSection");
+      const skillsData = await getData("homePage", "skillsSection");
+      const heroData = await getData("homePage", "heroSection");
+      const projectsData = await getData("homePage", "projectSection");
+
+      if (experienceData) setExperience(experienceData as experienceSection);
+      if (skillsData) setSkills(skillsData as skillsSection);
+      if (heroData) setHero(heroData as heroSection);
+      if (projectsData) setProjects(projectsData as projectSection);
     };
 
-    fetchDocuments();
+    fetchData();
   }, []);
 
-  const handleInputChange = (path: string, value: any) => {
-    if (!selectedDoc) return;
-
-    const updatedDoc = { ...selectedDoc };
-    const keys = path.split(".");
-    let current: any = updatedDoc;
-
-    keys.forEach((key, idx) => {
-      if (idx === keys.length - 1) {
-        // Ensure key is a valid property of the current object
-        current[key as keyof typeof current] = value;
-      } else {
-        current = current[key as keyof typeof current]; // Navigate deeper in the structure
-      }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewExperience({
+      ...newExperience,
+      [e.target.name]: e.target.value,
     });
-
-    setSelectedDoc(updatedDoc);
   };
 
-  const saveChanges = async () => {
-    if (!selectedDoc || !user) return;
+  const handleHeroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewHeroText(e.target.value);
+  };
 
-    setIsSaving(true);
-    setError(null);
+  const handleProjectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewProject({
+      ...newProject,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-    try {
-      const docRef = doc(db, "homePage", selectedDoc.id);
-      const { id, ...data } = selectedDoc; // Exclude `id` before saving
-      const updatedData = {
-        ...data,
-        lastModifiedBy: user.uid,
-        lastModifiedAt: new Date(),
+  const handleAddExperience = async () => {
+    if (experience) {
+      const updatedExperience = {
+        ...experience,
+        workExperienceData: [...experience.workExperienceData, newExperience],
       };
-      await updateDoc(docRef, updatedData);
-    } catch (err) {
-      setError("Failed to save changes. Please try again.");
-    } finally {
-      setIsSaving(false);
+      await updateData("homePage", "experienceSection", updatedExperience);
+      setExperience(updatedExperience);
+      setNewExperience({
+        company: "",
+        description: "",
+        location: "",
+        title: "",
+      });
     }
   };
 
-  if (isLoading) return <CircularProgress />;
-  if (!user || !isAdmin) return <Navigate to="/auth/login" />;
+  const handleUpdateHero = async () => {
+    if (hero) {
+      const updatedHero = { ...hero, heroText: newHeroText };
+      await updateData("homePage", "heroSection", updatedHero);
+      setHero(updatedHero);
+      setNewHeroText("");
+    }
+  };
+
+  const handleAddProject = async () => {
+    if (projects) {
+      const updatedProjects = {
+        ...projects,
+        projects: [...projects.projects, newProject],
+      };
+      await updateData("homePage", "projectSection", updatedProjects);
+      setProjects(updatedProjects as projectSection);
+      setNewProject({ title: "", description: "", link: "" });
+    }
+  };
+
+  const handleSectionToggle = (section: string) => {
+    switch (section) {
+      case "experience":
+        setShowExperience(!showExperience);
+        break;
+      case "skills":
+        setShowSkills(!showSkills);
+        break;
+      case "hero":
+        setShowHero(!showHero);
+        break;
+      case "projects":
+        setShowProjects(!showProjects);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
-    <Container>
-      <Header>
-        <Typography variant="h5">Admin Settings</Typography>
-        <LogoutIcon onClick={logout}>
-          <Logout />
-        </LogoutIcon>
-      </Header>
+    <SettingsWrapper>
+      <SectionTitle>Settings</SectionTitle>
 
-      <Typography variant="body1" gutterBottom>
-        Edit the homepage content below:
-      </Typography>
+      <SectionCard>
+        <h3>Toggle Sections</h3>
+        <ToggleSection>
+          <label>
+            <input
+              type="checkbox"
+              checked={showExperience}
+              onChange={() => handleSectionToggle("experience")}
+            />
+            Edit Experience Section
+          </label>
+          <br />
+          <label>
+            <input
+              type="checkbox"
+              checked={showSkills}
+              onChange={() => handleSectionToggle("skills")}
+            />
+            Edit Skills Section
+          </label>
+          <br />
+          <label>
+            <input
+              type="checkbox"
+              checked={showHero}
+              onChange={() => handleSectionToggle("hero")}
+            />
+            Edit Hero Section
+          </label>
+          <br />
+          <label>
+            <input
+              type="checkbox"
+              checked={showProjects}
+              onChange={() => handleSectionToggle("projects")}
+            />
+            Edit Projects Section
+          </label>
+        </ToggleSection>
+      </SectionCard>
 
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {/* Experience Section */}
+      {showExperience && (
+        <SectionCard>
+          <SectionTitle>Update Experience Section</SectionTitle>
+          {experience && (
+            <div>
+              <h3>Current Work Experiences</h3>
+              <ul>
+                {experience.workExperienceData.map((item, index) => (
+                  <li key={index}>
+                    {item.title} at {item.company}
+                  </li>
+                ))}
+              </ul>
 
-      <DocumentSelector>
-        <Select
-          value={selectedDoc?.id || ""}
-          onChange={(e) =>
-            setSelectedDoc(
-              documents.find((doc) => doc.id === e.target.value) || null
-            )
-          }
-        >
-          {documents.map((doc) => (
-            <option key={doc.id} value={doc.id}>
-              {doc.id}
-            </option>
-          ))}
-        </Select>
-      </DocumentSelector>
-
-      {selectedDoc && (
-        <FormContainer>
-          {/* Hero Section */}
-          <SectionTitle>Hero Section</SectionTitle>
-          <TextField
-            label="Hero Text"
-            value={selectedDoc.heroSection?.heroText}
-            onChange={(e) =>
-              handleInputChange("heroSection.heroText", e.target.value)
-            }
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Info Text"
-            value={selectedDoc.heroSection?.infoText}
-            onChange={(e) =>
-              handleInputChange("heroSection.infoText", e.target.value)
-            }
-            fullWidth
-            margin="normal"
-          />
-          <SectionTitle>Social Links</SectionTitle>
-          {selectedDoc.heroSection?.socialLinks.map((link, index) => (
-            <div key={index}>
-              <TextField
-                label={`Link Name ${index + 1}`}
-                value={link.name}
-                onChange={(e) =>
-                  handleInputChange(
-                    `heroSection.socialLinks.${index}.name`,
-                    e.target.value
-                  )
-                }
-                fullWidth
-                margin="normal"
+              <h3>Add New Work Experience</h3>
+              <InputField
+                type="text"
+                name="company"
+                placeholder="Company"
+                value={newExperience.company}
+                onChange={handleInputChange}
               />
-              <TextField
-                label={`Link URL ${index + 1}`}
-                value={link.url}
-                onChange={(e) =>
-                  handleInputChange(
-                    `heroSection.socialLinks.${index}.url`,
-                    e.target.value
-                  )
-                }
-                fullWidth
-                margin="normal"
+              <InputField
+                type="text"
+                name="title"
+                placeholder="Title"
+                value={newExperience.title}
+                onChange={handleInputChange}
               />
+              <InputField
+                type="text"
+                name="location"
+                placeholder="Location"
+                value={newExperience.location}
+                onChange={handleInputChange}
+              />
+              <InputField
+                type="text"
+                name="description"
+                placeholder="Description"
+                value={newExperience.description}
+                onChange={handleInputChange}
+              />
+              <Button onClick={handleAddExperience}>Add Experience</Button>
             </div>
-          ))}
-
-          {/* Work Experience */}
-          <SectionTitle>Work Experience</SectionTitle>
-          {selectedDoc.workExperience?.map((exp, index) => (
-            <div key={index}>
-              <TextField
-                label={`Title ${index + 1}`}
-                value={exp.title}
-                onChange={(e) =>
-                  handleInputChange(
-                    `workExperience.${index}.title`,
-                    e.target.value
-                  )
-                }
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label={`Company ${index + 1}`}
-                value={exp.company}
-                onChange={(e) =>
-                  handleInputChange(
-                    `workExperience.${index}.company`,
-                    e.target.value
-                  )
-                }
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label={`Location ${index + 1}`}
-                value={exp.location}
-                onChange={(e) =>
-                  handleInputChange(
-                    `workExperience.${index}.location`,
-                    e.target.value
-                  )
-                }
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label={`Description ${index + 1}`}
-                value={exp.description}
-                onChange={(e) =>
-                  handleInputChange(
-                    `workExperience.${index}.description`,
-                    e.target.value
-                  )
-                }
-                fullWidth
-                margin="normal"
-              />
-            </div>
-          ))}
-
-          {/* Projects */}
-          <SectionTitle>Projects</SectionTitle>
-          {selectedDoc.projects?.map((project, index) => (
-            <div key={index}>
-              <TextField
-                label={`Project Title ${index + 1}`}
-                value={project.title}
-                onChange={(e) =>
-                  handleInputChange(`projects.${index}.title`, e.target.value)
-                }
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label={`Project Description ${index + 1}`}
-                value={project.description}
-                onChange={(e) =>
-                  handleInputChange(
-                    `projects.${index}.description`,
-                    e.target.value
-                  )
-                }
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label={`Project Image URL ${index + 1}`}
-                value={project.image}
-                onChange={(e) =>
-                  handleInputChange(`projects.${index}.image`, e.target.value)
-                }
-                fullWidth
-                margin="normal"
-              />
-            </div>
-          ))}
-
-          {/* Skills Category */}
-          <SectionTitle>Skills</SectionTitle>
-          {selectedDoc.skillsCategory?.map((category, index) => (
-            <div key={index}>
-              <TextField
-                label={`Category Name ${index + 1}`}
-                value={category.category}
-                onChange={(e) =>
-                  handleInputChange(
-                    `skillsCategory.${index}.category`,
-                    e.target.value
-                  )
-                }
-                fullWidth
-                margin="normal"
-              />
-              {category.skills.map((skill, skillIndex) => (
-                <div key={skillIndex}>
-                  <TextField
-                    label={`Skill Name ${skillIndex + 1}`}
-                    value={skill.name}
-                    onChange={(e) =>
-                      handleInputChange(
-                        `skillsCategory.${index}.skills.${skillIndex}.name`,
-                        e.target.value
-                      )
-                    }
-                    fullWidth
-                    margin="normal"
-                  />
-                  <TextField
-                    label={`Skill Icon ${skillIndex + 1}`}
-                    value={skill.icon}
-                    onChange={(e) =>
-                      handleInputChange(
-                        `skillsCategory.${index}.skills.${skillIndex}.icon`,
-                        e.target.value
-                      )
-                    }
-                    fullWidth
-                    margin="normal"
-                  />
-                </div>
-              ))}
-            </div>
-          ))}
-        </FormContainer>
+          )}
+        </SectionCard>
       )}
 
-      <SaveButton onClick={saveChanges} disabled={isSaving}>
-        {isSaving ? "Saving..." : "Save Changes"}
-      </SaveButton>
-    </Container>
+      {/* Hero Section */}
+      {showHero && (
+        <SectionCard>
+          <SectionTitle>Update Hero Section</SectionTitle>
+          {hero && (
+            <div>
+              <h3>Current Hero Text</h3>
+              <p>{hero.heroText}</p>
+              <h3>Edit Hero Text</h3>
+              <InputField
+                type="text"
+                value={newHeroText}
+                onChange={handleHeroChange}
+                placeholder="Enter new hero text"
+              />
+              <Button onClick={handleUpdateHero}>Update Hero Text</Button>
+            </div>
+          )}
+        </SectionCard>
+      )}
+
+      {/* Projects Section */}
+      {showProjects && (
+        <SectionCard>
+          <SectionTitle>Update Projects Section</SectionTitle>
+          {projects && (
+            <div>
+              <h3>Current Projects</h3>
+              <ul>
+                {projects.projects.map((project, index) => (
+                  <li key={index}>
+                    {project.title} - {project.description}
+                  </li>
+                ))}
+              </ul>
+
+              <h3>Add New Project</h3>
+              <InputField
+                type="text"
+                name="title"
+                placeholder="Project Title"
+                value={newProject.title}
+                onChange={handleProjectChange}
+              />
+              <InputField
+                type="text"
+                name="description"
+                placeholder="Project Description"
+                value={newProject.description}
+                onChange={handleProjectChange}
+              />
+              <InputField
+                type="text"
+                name="link"
+                placeholder="Project Link"
+                value={newProject.link}
+                onChange={handleProjectChange}
+              />
+              <Button onClick={handleAddProject}>Add Project</Button>
+            </div>
+          )}
+        </SectionCard>
+      )}
+    </SettingsWrapper>
   );
 };
 
 export default Settings;
-
-// Styled Components
-const Container = styled.div`
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-`;
-
-const LogoutIcon = styled(IconButton)`
-  color: ${({ theme }) => theme.text};
-  &:hover {
-    color: ${({ theme }) => theme.accent};
-  }
-`;
-
-const DocumentSelector = styled.div`
-  width: 300px;
-  margin-bottom: 1rem;
-`;
-
-const Select = styled.select`
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-`;
-
-const FormContainer = styled.div`
-  background-color: #f7f7f7;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-`;
-
-const SectionTitle = styled.h3`
-  margin-top: 1.5rem;
-  font-size: 1.2rem;
-`;
-
-const SaveButton = styled(Button)`
-  background-color: ${({ theme }) => theme.accent};
-  color: white;
-  width: 100%;
-  padding: 1rem;
-  border-radius: 8px;
-  &:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-`;
-
-const ErrorMessage = styled(Typography)`
-  color: red;
-  font-size: 1rem;
-  margin-bottom: 1rem;
-`;

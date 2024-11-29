@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
-import Skeleton from "@mui/material/Skeleton"; // Importing Skeleton loader
+import Skeleton from "@mui/material/Skeleton";
 
 const AboutSection: React.FC = () => {
   const [aboutContent, setAboutContent] = useState<any>(null);
@@ -25,41 +25,47 @@ const AboutSection: React.FC = () => {
     fetchAboutContent();
   }, []);
 
-  const totalItems = aboutContent?.workExperienceData?.length || 0; // Count number of cards
+  const totalItems = aboutContent?.workExperienceData?.length || 0;
 
   return (
     <SectionContainer id="about">
       <Title>Work Experience</Title>
-      <CardGrid totalItems={totalItems}>
-        {/* Show Skeleton Loader if content is not loaded yet */}
+      <CardList>
         {totalItems === 0
           ? [...Array(2)].map((_, index) => (
-              <Card key={index} isLeftCard={index % 2 === 0}>
-                <Skeleton variant="text" width={250} height={30} />
-                <Skeleton variant="text" width={250} height={20} />
-                <Skeleton variant="text" width={250} height={250} />
-                <Skeleton variant="text" width={250} height={15} />
-              </Card>
+              <ExperienceCard key={index}>
+                <Skeleton variant="circular" width={60} height={60} />
+                <Skeleton variant="text" width={200} height={30} />
+                <Skeleton variant="text" width={150} height={20} />
+                <Skeleton variant="rectangular" width="100%" height={50} />
+              </ExperienceCard>
             ))
           : aboutContent.workExperienceData?.map((job: any, index: number) => (
-              <Card key={index} isLeftCard={index % 2 === 0}>
-                <CardHeader>
-                  <JobTitle>{job.title}</JobTitle>
-                  <Company>{job.company}</Company>
-                </CardHeader>
-                <Location>{job.location}</Location>
-                <Description>
-                  <ul>
+              <ExperienceCard key={index}>
+                <CompanyLogo
+                  src={job.companyLogo || "/icons/default-company.svg"}
+                  alt={`${job.company} logo`}
+                />
+                <CardContent>
+                  <CardHeader>
+                    <JobTitle>{job.title}</JobTitle>
+                    <Company>{job.company}</Company>
+                    <Details>
+                      <Location>{job.location}</Location>
+                    </Details>
+                  </CardHeader>
+                  <Separator />
+                  <Description>
                     {job.description
                       .split("\n")
                       .map((line: string, idx: number) => (
-                        <li key={idx}>{line}</li>
+                        <p key={idx}>{line}</p>
                       ))}
-                  </ul>
-                </Description>
-              </Card>
+                  </Description>
+                </CardContent>
+              </ExperienceCard>
             ))}
-      </CardGrid>
+      </CardList>
     </SectionContainer>
   );
 };
@@ -68,101 +74,107 @@ export default AboutSection;
 
 // Styled Components
 const SectionContainer = styled.section`
-  padding: 60px 30px;
+  padding: 60px 20px;
   background-color: ${({ theme }) => theme.background};
   color: ${({ theme }) => theme.text};
   min-height: 100vh;
-  border-bottom: 2px solid ${({ theme }) => theme.accent};
-  position: relative;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const Title = styled.h2`
   font-size: 2.5rem;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 `;
 
-const CardGrid = styled.div<{ totalItems: number }>`
+const CardList = styled.div`
   display: grid;
-  grid-template-columns: ${(props) =>
-    props.totalItems === 1 ? "1fr" : "repeat(2, 1fr)"};
-  gap: 50px;
-  padding: 0 10%;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr; /* Single column for mobile */
-    gap: 20px;
-    padding: 0 0;
-    /* Reduce gap for better spacing on smaller screens */
-  }
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  width: 100%;
+  max-width: 1200px;
+  justify-content: center;
 `;
 
-const Card = styled.div<{ isLeftCard: boolean }>`
+const ExperienceCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 20px;
   background-color: ${({ theme }) => theme.cardBackground};
   border-radius: 12px;
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-  padding: 40px;
-  position: relative;
-  background: url("/patterns/pattern-1.svg") no-repeat center center,
-    radial-gradient(circle, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.05));
-  background-size: cover, 250% 250%;
-  color: ${({ theme }) => theme.text};
-  overflow: hidden;
-  max-width: 480px;
-  margin: 0 auto;
+  transition: transform 0.2s ease-in-out;
+  cursor: pointer;
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    ${(props) => (props.isLeftCard ? "left: -50px;" : "right: -50px;")}
-    width: 80px;
-    height: 80px;
-    background-color: ${({ theme }) => theme.accent};
-    border-radius: 50%;
-    opacity: 0.2;
-    z-index: 1;
-    transform: translateY(-50%);
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
   }
+`;
+
+const CompanyLogo = styled.img`
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  object-fit: contain;
+  border: 2px solid ${({ theme }) => theme.accent};
+`;
+
+const CardContent = styled.div`
+  flex: 1;
+  width: 100%;
 `;
 
 const CardHeader = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
-const JobTitle = styled.h3`
-  font-size: 1.9rem;
-  font-weight: bold;
-  text-align: center;
-`;
-
-const Company = styled.p`
-  font-size: 1.3rem;
-  text-align: center;
-  color: ${({ theme }) => theme.accent};
-`;
-
-const Location = styled.p`
-  font-size: 1.1rem;
-  text-align: center;
-  color: ${({ theme }) => theme.text};
+const Separator = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: ${({ theme }) => theme.accent};
   margin: 10px 0;
 `;
 
-const Description = styled.div`
-  ul {
-    list-style-type: disc;
-    padding-left: 20px;
-    color: ${({ theme }) => theme.text};
+const JobTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: ${({ theme }) => theme.text};
+`;
 
-    li {
-      font-size: 1rem;
-      line-height: 1.6;
-    }
+const Company = styled.p`
+  font-size: 1.2rem;
+  color: ${({ theme }) => theme.accent};
+  margin: 5px 0;
+`;
+
+const Details = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  font-size: 1rem;
+  color: ${({ theme }) => theme.textSecondary};
+`;
+
+const Location = styled.span`
+  color: ${({ theme }) => theme.text};
+`;
+
+const Description = styled.div`
+  margin-top: 15px;
+  font-size: 1rem;
+  color: ${({ theme }) => theme.text};
+  line-height: 1.5;
+
+  p {
+    margin: 0 0 10px;
   }
 `;

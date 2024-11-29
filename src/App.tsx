@@ -1,136 +1,73 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { ThemeProvider } from "styled-components";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
+  useLocation,
   Navigate,
 } from "react-router-dom";
 import GlobalStyles from "./styles/GlobalStyles";
 import { lightTheme, darkTheme } from "./styles/theme";
-import Header from "./components/header/Header";
-import HeroSection from "./components/hero/Hero";
-import AboutSection from "./components/about/About";
-import SkillsSection from "./components/skills/Skills";
-import ProjectsSection from "./components/projects/Project";
-import ContactForm from "./components/contact/Contact";
+import { useTheme } from "./hooks/useTheme";
+import NotFound from "./components/404/NotFound";
 import Footer from "./components/footer/Footer";
-import Login from "./components/auth/Login";
+import Header from "./components/header/Header";
+import Loader from "./components/styled-components/Loader";
 import { useAuth } from "./context/AuthContext";
+import ProtectedRoutes from "./routes/ProtectedRoutes";
+import { downloadCV } from "./utils/downloadCV"; // Import the utility function
+import Login from "./components/auth/Login";
+import Home from "./components/home/Home";
 import Settings from "./components/admin/Settings";
-import { CircularProgress, Box } from "@mui/material"; // Import MUI CircularProgress
-import NotFoundPage from "./components/404/NotFound";
-import styled from "styled-components"; // Import styled-components
-
-// Create a styled component for the loader wrapper
-const StyledLoaderWrapper = styled(Box)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: ${(props) =>
-    props.theme.background}; // Access background from the theme
-`;
+import AdminDashboard from "./components/admin/Dahboard";
 
 const App: React.FC = () => {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const { isDarkMode, toggleTheme } = useTheme();
+  const { isLoading: authLoading } = useAuth();
   const cv = `${process.env.PUBLIC_URL}/cv/Jad-Ghader-CV.docx`;
-  const { isLoading: authLoading } = useAuth(); // Authentication loading state
 
-  // Check localStorage for saved theme preference
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("isDarkMode");
-    if (savedTheme !== null) {
-      setIsDarkMode(JSON.parse(savedTheme)); // Parse the saved value and set the theme
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    setIsDarkMode((prevMode) => {
-      const newMode = !prevMode;
-      localStorage.setItem("isDarkMode", JSON.stringify(newMode)); // Save the theme to localStorage
-      return newMode;
-    });
-  };
-
-  const downloadCV = () => {
-    const link = document.createElement("a");
-    link.href = cv;
-    link.download = "Jad-Ghader-CV.docx";
-    link.click();
-  };
-
-  if (authLoading) {
-    // Show a loader if auth is loading
-    return (
-      <StyledLoaderWrapper>
-        <CircularProgress />
-      </StyledLoaderWrapper>
-    );
-  }
+  if (authLoading) return <Loader />;
 
   return (
     <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <GlobalStyles />
       <Router>
-        <Routes>
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/admin/*" element={<ProtectedAdminRoutes />} />
-          <Route
-            path="/"
-            element={
-              <>
-                <Header
-                  onDownloadCV={downloadCV}
-                  toggleTheme={toggleTheme}
-                  isDarkMode={isDarkMode}
-                />
-                <Home />
-              </>
-            }
-          />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-        <Footer />
+        <AppContent toggleTheme={toggleTheme} isDarkMode={isDarkMode} cv={cv} />
       </Router>
     </ThemeProvider>
   );
 };
 
-// Protected Routes for Admin
-const ProtectedAdminRoutes: React.FC = () => {
-  const { isAdmin, isLoading } = useAuth();
+const AppContent = ({ toggleTheme, isDarkMode, cv }: any) => {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/"; // Check if the current path is the home page
 
-  if (isLoading) return null; // Show nothing while loading
+  return (
+    <>
+      {isHomePage && (
+        <Header
+          toggleTheme={toggleTheme}
+          isDarkMode={isDarkMode}
+          onDownloadCV={() => downloadCV(cv)}
+        />
+      )}
 
-  return isAdmin ? (
-    <Routes>
-      <Route path="settings" element={<Settings />} />
-      <Route path="*" element={<Navigate to="/admin/settings" />} />
-    </Routes>
-  ) : (
-    <Navigate to="/auth/login" />
+      <Routes>
+        <Route path="/auth/login" element={<Login />} />
+
+        <Route path="/admin/*" element={<ProtectedRoutes />}>
+          <Route index element={<Navigate to="/admin/dashboard" />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+        </Route>
+
+        <Route path="/" element={<Home />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Footer />
+    </>
   );
 };
 
-// Home Component (Combines all public sections)
-const Home: React.FC = () => (
-  <>
-    <HeroSection />
-    <div id="about">
-      <AboutSection />
-    </div>
-    <div id="skills">
-      <SkillsSection />
-    </div>
-    <div id="projects">
-      <ProjectsSection />
-    </div>
-    <div id="contact">
-      <ContactForm />
-    </div>
-  </>
-);
-
 export default App;
-
