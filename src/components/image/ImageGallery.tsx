@@ -29,17 +29,17 @@ const ImageGallery: React.FC<{ images: string[] }> = ({ images }) => {
         <CloseButton onClick={closeModal}>
           <FaTimes />
         </CloseButton>
-        <ImageContainer>
+        <ImageContainer deviceType={deviceType}>
           <StyledImage
             src={images[currentIndex]}
             alt={`Gallery image ${currentIndex + 1}`}
           />
         </ImageContainer>
         <Navigation>
-          <NavButton onClick={prevImage}>
+          <NavButton direction="left" onClick={prevImage}>
             <FaArrowLeft />
           </NavButton>
-          <NavButton onClick={nextImage}>
+          <NavButton direction="right" onClick={nextImage}>
             <FaArrowRight />
           </NavButton>
         </Navigation>
@@ -49,7 +49,7 @@ const ImageGallery: React.FC<{ images: string[] }> = ({ images }) => {
 
   return (
     <>
-      <GalleryContainer onClick={openModal}>
+      <GalleryContainer deviceType={deviceType} onClick={openModal}>
         <GalleryImage src={images[0]} alt="Gallery Thumbnail" />
       </GalleryContainer>
       {isModalOpen && ReactDOM.createPortal(modal, document.body)}
@@ -58,23 +58,24 @@ const ImageGallery: React.FC<{ images: string[] }> = ({ images }) => {
 };
 
 // Styled Components
-const GalleryContainer = styled.div`
+const GalleryContainer = styled.div<{
+  deviceType: "mobile" | "tablet" | "desktop";
+}>`
   width: 100%;
-  height: 100%;
+  height: ${({ deviceType }) =>
+    deviceType === "mobile"
+      ? "150px"
+      : "250px"}; /* Adjust thumbnail container height */
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-
-  @media (max-width: 768px) {
-    height: 200px;
-  }
 `;
 
 const GalleryImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover; /* Ensure consistent display in thumbnails */
   border-radius: 8px;
   box-shadow: 0 4px 10px ${({ theme }) => theme.shadow};
 `;
@@ -98,52 +99,56 @@ const ModalContent = styled.div<{
   position: relative;
   width: ${({ deviceType }) =>
     deviceType === "mobile"
-      ? "90%"
+      ? "95%"
       : deviceType === "tablet"
       ? "90%"
-      : "800px"};
-  max-height: 90vh;
+      : "800px"}; /* Adjust modal width for devices */
+  max-height: 95vh;
   background: ${({ theme }) => theme.cardBackground};
   border-radius: 12px;
-  padding: 40px; /* Added padding for space around the image */
+  padding: ${({ deviceType }) =>
+    deviceType === "mobile" ? "20px" : "40px"}; /* Adjust padding */
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 auto; // Ensures horizontal centering
-
-
-  @media (max-width: 768px) {
-    padding: 20px; /* Adjust padding for smaller screens */
-  }
+  margin: 0 auto; /* Center the modal */
+  overflow-y: auto; /* Handle overflow gracefully */
 `;
 
-const ImageContainer = styled.div`
+const ImageContainer = styled.div<{
+  deviceType: "mobile" | "tablet" | "desktop";
+}>`
   width: 100%;
-  max-height: 80vh; /* Limit image height */
+  max-height: ${({ deviceType }) =>
+    deviceType === "mobile"
+      ? "60vh"
+      : deviceType === "tablet"
+      ? "70vh"
+      : "80vh"}; /* Adjust heights for device types */
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border: 12px solid ${({ theme }) => theme.background}; /* Border around image */
   border-radius: 12px;
-  background: ${({ theme }) =>
-    theme.background}; /* Ensure padding background is visible */
+  background: white;
+  margin: 20px 0; /* Add spacing around the image */
 `;
 
 const StyledImage = styled.img`
-  max-width: 100%; /* Scale image within container */
-  max-height: 100%; /* Keep aspect ratio intact */
-  object-fit: contain; /* Ensures image fits without distortion */
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Ensure the image fits without distortion */
+  border-radius: 8px; /* Optional: Add rounded corners to images */
 `;
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 10px; /* Position relative to modal padding */
+  top: 10px;
   right: 10px;
   background: transparent;
   border: none;
   color: ${({ theme }) => theme.text};
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   cursor: pointer;
   z-index: 1001;
 
@@ -155,27 +160,46 @@ const CloseButton = styled.button`
 const Navigation = styled.div`
   position: absolute;
   top: 50%;
-  width: calc(100% - 80px); /* Adjust width based on modal padding */
+  width: calc(100% - 24px); /* Adjust for modal padding and spacing */
   display: flex;
   justify-content: space-between;
   transform: translateY(-50%);
   z-index: 1001;
 `;
 
-const NavButton = styled.button`
-  background: rgba(0, 0, 0, 0.6);
+const NavButton = styled.button<{ direction: "left" | "right" }>`
+  background: rgba(0, 0, 0, 0.4);
   color: white;
   border: none;
-  font-size: 2rem;
-  padding: 10px;
-  border-radius: 50%;
+  font-size: 1.5rem;
+  width: 40px; /* Circular button width */
+  height: 40px; /* Circular button height */
+  border-radius: 50%; /* Make it circular */
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: absolute;
 
+  /* Position the buttons near the border frame */
+  ${({ direction }) => (direction === "left" ? "left: 25px;" : "right: 25px;")}
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%);
+
+  /* Button hover effects */
   &:hover {
     background: ${({ theme }) => theme.hoverAccent};
+  }
+
+  /* Adjustments for mobile devices */
+  @media (max-width: 768px) {
+    font-size: 1rem; /* Smaller icon size */
+    width: 30px; /* Smaller circular button */
+    height: 30px;
+    ${({ direction }) =>
+      direction === "left"
+        ? "left: 8px;"
+        : "right: 8px;"}/* Closer to border */
   }
 `;
 

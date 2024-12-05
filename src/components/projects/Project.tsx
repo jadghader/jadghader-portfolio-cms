@@ -48,7 +48,7 @@ const ProjectsSection: React.FC = () => {
         {projectsData.projects.map((project: any, index: number) => (
           <ProjectCard key={index}>
             <ImageWrapper>
-              <ImageGallery images={project.images} />;
+              <ImageGallery images={project.images} />
             </ImageWrapper>
             <ProjectContent>
               <ProjectTitle>{project.title}</ProjectTitle>
