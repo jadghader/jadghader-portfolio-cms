@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { doc, getDoc } from "firebase/firestore"; // Import Firestore methods
-import { db } from "../../firebase"; // Adjust to your Firebase configuration
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase";
+import ImageGallery from "../image/ImageGallery";
 
 const ProjectsSection: React.FC = () => {
-  const [projectsData, setProjectsData] = useState<any>(null); // State to hold Firestore content
+  const [projectsData, setProjectsData] = useState<any>(null);
 
   useEffect(() => {
     const fetchProjectsContent = async () => {
       try {
-        const docRef = doc(db, "homePage", "projectSection"); // Get projectSection document
+        const docRef = doc(db, "homePage", "projectSection");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setProjectsData(docSnap.data());
@@ -22,12 +23,11 @@ const ProjectsSection: React.FC = () => {
     };
 
     fetchProjectsContent();
-  }, []); // Empty dependency array to run once when the component mounts
+  }, []);
 
   if (!projectsData) {
     return (
       <SkeletonContainer>
-        {/* Skeleton Loading */}
         {[...Array(3)].map((_, index) => (
           <SkeletonCard key={index}>
             <SkeletonImage />
@@ -48,7 +48,7 @@ const ProjectsSection: React.FC = () => {
         {projectsData.projects.map((project: any, index: number) => (
           <ProjectCard key={index}>
             <ImageWrapper>
-              <ProjectImage src={project.image} alt={project.title} />
+              <ImageGallery images={project.images} />;
             </ImageWrapper>
             <ProjectContent>
               <ProjectTitle>{project.title}</ProjectTitle>
@@ -70,8 +70,6 @@ const SectionContainer = styled.section`
   background-color: ${({ theme }) => theme.background};
   color: ${({ theme }) => theme.text};
   border-bottom: 2px solid ${({ theme }) => theme.accent};
-  position: relative;
-  overflow: hidden;
 `;
 
 const SectionTitle = styled.h2`
@@ -79,7 +77,6 @@ const SectionTitle = styled.h2`
   font-weight: bold;
   text-align: center;
   margin-bottom: 40px;
-  z-index: 1;
 `;
 
 const ProjectGrid = styled.div`
@@ -87,7 +84,6 @@ const ProjectGrid = styled.div`
   flex-direction: column;
   gap: 40px;
   align-items: center;
-  z-index: 1;
 `;
 
 const ProjectCard = styled.div`
@@ -112,8 +108,8 @@ const ProjectCard = styled.div`
 `;
 
 const ImageWrapper = styled.div`
-  width: 40%;
-  height: 100%;
+  width: 45%;
+  height: 90%;
   padding: 15px;
   display: flex;
   align-items: center;
@@ -128,39 +124,24 @@ const ImageWrapper = styled.div`
   }
 `;
 
-const ProjectImage = styled.img`
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-`;
 
 const ProjectContent = styled.div`
   padding: 20px;
   flex: 1;
-  padding-left: 20px;
-  padding-right: 20px;
 `;
 
 const ProjectTitle = styled.h3`
   font-weight: bold;
   margin-bottom: 10px;
   color: ${({ theme }) => theme.accent};
-  @media (max-width: 768px) {
-    font-size: 1.25rem;
-  }
 `;
 
 const ProjectDescription = styled.p`
   font-size: 1rem;
   line-height: 1.5;
   color: ${({ theme }) => theme.text};
-  @media (max-width: 768px) {
-    font-size: 1rem;
-  }
 `;
 
-// Skeleton Styled Components
 const SkeletonContainer = styled.section`
   padding: 60px 20px;
   background-color: ${({ theme }) => theme.background};

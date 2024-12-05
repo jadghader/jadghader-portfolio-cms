@@ -42,27 +42,25 @@ const AboutSection: React.FC = () => {
             ))
           : aboutContent.workExperienceData?.map((job: any, index: number) => (
               <ExperienceCard key={index}>
-                <CompanyLogo
-                  src={job.companyLogo || "/icons/default-company.svg"}
-                  alt={`${job.company} logo`}
-                />
-                <CardContent>
-                  <CardHeader>
+                <UpperSection>
+                  <CompanyLogo
+                    src={job.companyLogo || "/icons/default-company.svg"}
+                    alt={`${job.company} logo`}
+                  />
+                  <Content>
                     <JobTitle>{job.title}</JobTitle>
                     <Company>{job.company}</Company>
-                    <Details>
-                      <Location>{job.location}</Location>
-                    </Details>
-                  </CardHeader>
-                  <Separator />
-                  <Description>
-                    {job.description
-                      .split("\n")
-                      .map((line: string, idx: number) => (
-                        <p key={idx}>{line}</p>
-                      ))}
-                  </Description>
-                </CardContent>
+                    <Location>{job.location}</Location>
+                  </Content>
+                </UpperSection>
+                <Separator />
+                <Description>
+                  {job.description
+                    .split("\n")
+                    .map((line: string, idx: number) => (
+                      <p key={idx}>{line}</p>
+                    ))}
+                </Description>
               </ExperienceCard>
             ))}
       </CardList>
@@ -81,6 +79,7 @@ const SectionContainer = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-bottom: 2px solid ${({ theme }) => theme.accent};
 `;
 
 const Title = styled.h2`
@@ -103,18 +102,26 @@ const ExperienceCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 20px;
   padding: 20px;
   background-color: ${({ theme }) => theme.cardBackground};
   border-radius: 12px;
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease-in-out;
   cursor: pointer;
+  gap: 10px;
 
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
   }
+`;
+
+const UpperSection = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
 `;
 
 const CompanyLogo = styled.img`
@@ -125,56 +132,42 @@ const CompanyLogo = styled.img`
   border: 2px solid ${({ theme }) => theme.accent};
 `;
 
-const CardContent = styled.div`
-  flex: 1;
-  width: 100%;
-`;
-
-const CardHeader = styled.div`
+const Content = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
-`;
-
-const Separator = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: ${({ theme }) => theme.accent};
-  margin: 10px 0;
+  justify-content: flex-start;
 `;
 
 const JobTitle = styled.h3`
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: bold;
   margin: 0;
   color: ${({ theme }) => theme.text};
 `;
 
 const Company = styled.p`
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: ${({ theme }) => theme.accent};
   margin: 5px 0;
 `;
 
-const Details = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  gap: 20px;
+const Location = styled.span`
   font-size: 1rem;
   color: ${({ theme }) => theme.textSecondary};
 `;
 
-const Location = styled.span`
-  color: ${({ theme }) => theme.text};
+const Separator = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: ${({ theme }) => theme.accent};
 `;
 
 const Description = styled.div`
-  margin-top: 15px;
   font-size: 1rem;
   color: ${({ theme }) => theme.text};
   line-height: 1.5;
 
   p {
-    margin: 0 0 10px;
+    margin: 10px 0;
   }
 `;

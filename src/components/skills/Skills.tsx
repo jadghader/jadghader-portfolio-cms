@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { doc, getDoc } from "firebase/firestore"; // Import Firestore methods
 import { db } from "../../firebase";
+import { useDeviceType } from "../../hooks/useDeviceType"; // Import the custom hook
 
 const SkillsSection: React.FC = () => {
   const [skillsData, setSkillsData] = useState<any>(null); // State to hold Firestore content
+  const deviceType = useDeviceType(); // Use the hook to get device type
 
   useEffect(() => {
     const fetchSkillsContent = async () => {
@@ -42,13 +44,13 @@ const SkillsSection: React.FC = () => {
   }
 
   return (
-    <SkillsSectionContainer id="skills">
+    <SkillsSectionContainer id="skills" deviceType={deviceType}>
       {skillsData.skillsData.map((category: any, index: number) => (
         <SkillCategory key={index}>
           <CategoryTitle>{category.category}</CategoryTitle>
-          <SkillsList>
+          <SkillsList deviceType={deviceType}>
             {category.skills.map((skill: any, index: number) => (
-              <SkillCard key={index}>
+              <SkillCard key={index} deviceType={deviceType}>
                 <Icon src={skill.icon} alt={skill.name} />
                 <SkillText>{skill.name}</SkillText>
               </SkillCard>
@@ -56,8 +58,8 @@ const SkillsSection: React.FC = () => {
           </SkillsList>
         </SkillCategory>
       ))}
-      <LeftCircle />
-      <RightCircle />
+      <LeftCircle deviceType={deviceType} />
+      <RightCircle deviceType={deviceType} />
     </SkillsSectionContainer>
   );
 };
@@ -65,20 +67,23 @@ const SkillsSection: React.FC = () => {
 export default SkillsSection;
 
 // Styled Components
-const SkillsSectionContainer = styled.section`
+const SkillsSectionContainer = styled.section<{
+  deviceType: "mobile" | "tablet" | "desktop";
+}>`
   padding: 60px 30px;
   background-color: ${({ theme }) => theme.background};
   color: ${({ theme }) => theme.text};
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: ${({ deviceType }) =>
+    deviceType === "desktop"
+      ? "repeat(4, 1fr)"
+      : deviceType === "tablet"
+      ? "repeat(2, 1fr)"
+      : "1fr"};
   gap: 40px;
   position: relative;
   border-bottom: 2px solid ${({ theme }) => theme.accent};
   overflow: hidden;
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
 `;
 
 const SkillCategory = styled.div`
@@ -94,30 +99,23 @@ const CategoryTitle = styled.h3`
   color: ${({ theme }) => theme.text};
 `;
 
-const SkillsList = styled.div`
+const SkillsList = styled.div<{ deviceType: "mobile" | "tablet" | "desktop" }>`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
-
-  @media (max-width: 768px) {
-    justify-content: space-between;
-  }
 `;
 
-const SkillCard = styled.div`
+const SkillCard = styled.div<{ deviceType: "mobile" | "tablet" | "desktop" }>`
   background-color: ${({ theme }) => theme.cardBackground};
   border-radius: 12px;
   padding: 20px;
-  width: 180px;
+  width: ${({ deviceType }) =>
+    deviceType === "mobile" ? "calc(50% - 10px)" : "180px"};
   text-align: center;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   position: relative;
-
-  @media (max-width: 768px) {
-    width: calc(50% - 10px);
-  }
 
   &:hover {
     transform: translateY(-10px);
@@ -147,9 +145,6 @@ const SkeletonContainer = styled.section`
   position: relative;
   border-bottom: 2px solid ${({ theme }) => theme.accent};
   overflow: hidden;
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
 `;
 
 const SkeletonCategory = styled.div`
@@ -183,13 +178,13 @@ const SkeletonCard = styled.div`
   height: 150px;
 `;
 
-const LeftCircle = styled.div`
+const LeftCircle = styled.div<{ deviceType: "mobile" | "tablet" | "desktop" }>`
   content: "";
   position: absolute;
   top: 50%;
-  left: -100px;
-  width: 200px;
-  height: 200px;
+  left: ${({ deviceType }) => (deviceType === "desktop" ? "-100px" : "-50px")};
+  width: ${({ deviceType }) => (deviceType === "desktop" ? "200px" : "100px")};
+  height: ${({ deviceType }) => (deviceType === "desktop" ? "200px" : "100px")};
   background-color: ${({ theme }) => theme.accent};
   border-radius: 50%;
   opacity: 0.2;
@@ -197,13 +192,13 @@ const LeftCircle = styled.div`
   transform: translateY(-50%);
 `;
 
-const RightCircle = styled.div`
+const RightCircle = styled.div<{ deviceType: "mobile" | "tablet" | "desktop" }>`
   content: "";
   position: absolute;
   top: 50%;
-  right: -100px;
-  width: 200px;
-  height: 200px;
+  right: ${({ deviceType }) => (deviceType === "desktop" ? "-100px" : "-50px")};
+  width: ${({ deviceType }) => (deviceType === "desktop" ? "200px" : "100px")};
+  height: ${({ deviceType }) => (deviceType === "desktop" ? "200px" : "100px")};
   background-color: ${({ theme }) => theme.accent};
   border-radius: 50%;
   opacity: 0.2;
