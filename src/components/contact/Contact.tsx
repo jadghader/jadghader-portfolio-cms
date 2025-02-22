@@ -13,6 +13,7 @@ const ContactForm: React.FC = () => {
   const checkMark = `${process.env.PUBLIC_URL}/icons/check-tick.svg`; // Accessing image in public
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, setStatus] = useState("");
   const [showPopup, setShowPopup] = useState(false); // State for the popup
 

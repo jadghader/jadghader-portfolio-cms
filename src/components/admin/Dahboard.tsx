@@ -8,7 +8,6 @@ import { getData } from "../../firebase/firestore";
 import styled from "styled-components";
 import { FaPen } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "styled-components"; // Use for theme management
 
 const DashboardWrapper = styled.div`
   display: flex;
