@@ -81,7 +81,10 @@ const DesktopHeader: React.FC<HeaderProps & { isMenuOpen: boolean }> = ({
 }) => {
   return (
     <>
-      <Logo to="/">&lt;JG/&gt;</Logo>
+      <Logo to="/">
+        {" "}
+        <span>Jad Ghader</span>
+      </Logo>{" "}
       <NavLinks isMenuOpen={isMenuOpen}>
         <NavItem to="about" smooth={true} duration={500}>
           About
@@ -120,7 +123,10 @@ const MobileHeader: React.FC<
 }) => {
   return (
     <>
-      <Logo to="/">&lt;JG/&gt;</Logo>
+      <Logo to="/">
+        {" "}
+        <span>Jad Ghader</span>
+      </Logo>
       <HamburgerButton onClick={toggleMenu}>
         <IconWrapper isMenuOpen={isMenuOpen}>
           {isDarkMode ? (
@@ -186,15 +192,29 @@ const NavContainer = styled.nav<{
 `;
 
 const Logo = styled(Link)`
-  font-size: 1.6rem;
-  font-weight: bold;
-  color: ${({ theme }) => theme.text};
+  display: flex;
+  align-items: center;
   text-decoration: none;
-  transition: color 0.3s ease-in-out;
-  z-index: 15;
+  gap: 10px; /* Space between logo and text */
 
-  &:hover {
-    color: ${({ theme }) => theme.accent};
+  &::before {
+    content: "J";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; /* Adjust size as needed */
+    height: 36px;
+    background-color: ${({ theme }) => theme.inputText}; /* Outer circle */
+    border-radius: 50%; /* Makes it a circle */
+    font-size: 24px;
+    font-weight: bold;
+    color: ${({ theme }) => theme.background};
+  }
+
+  span {
+    font-size: 20px;
+    font-weight: bold;
+    color: ${({ theme }) => theme.text};
   }
 `;
 

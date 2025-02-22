@@ -11,7 +11,7 @@ export interface skillsSection {
 }
 export interface projectsData {
   description: string;
-  image: string;
+  images: string[];
   title: string;
 }
 export interface projectSection {
@@ -32,6 +32,7 @@ export interface workExperienceData {
   description: string;
   location: string;
   title: string;
+  companyLogo: string;
 }
 export interface experienceSection {
   workExperienceData: workExperienceData[];

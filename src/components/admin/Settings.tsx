@@ -3,334 +3,428 @@ import { getData, updateData } from "../../firebase/firestore";
 import {
   experienceSection,
   skillsSection,
-  heroSection,
   projectSection,
 } from "../../interfaces/firestore.interface";
 import styled from "styled-components";
+import { FaTrash, FaPlus } from "react-icons/fa";
+import { useParams } from "react-router-dom";
 
-// Styled components for a modern UI/UX
 const SettingsWrapper = styled.div`
   padding: 30px;
-  background-color: #f8f9fa;
+  background-color: ${({ theme }) => theme.background};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+
 `;
 
 const SectionTitle = styled.h2`
   font-size: 2rem;
-  color: #333;
-  margin-bottom: 20px;
+  color: ${({ theme }) => theme.accent};
+  margin-bottom: 10px;
 `;
 
 const SectionCard = styled.div`
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.background};
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+  margin-bottom: 5px;
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
 `;
 
 const InputField = styled.input`
   padding: 10px;
-  margin: 10px 0;
+  margin: 5px 0;
   width: 100%;
-  border: 1px solid #ddd;
+  border: 1px solid ${({ theme }) => theme.accent};
   border-radius: 4px;
 `;
 
 const Button = styled.button`
-  background-color: #007bff;
-  color: white;
+  background-color: ${({ theme }) => theme.accent};
+  color: ${({ theme }) => theme.text};
   padding: 10px 20px;
+  margin-bottom: 5px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: ${({ theme }) => theme.accentDark};
   }
 `;
 
-const ToggleSection = styled.div`
-  margin-top: 20px;
+const DeleteButton = styled.button`
+  background-color: ${({ theme }) => theme.danger};
+  color: white;
+  margin: 5px 0px;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.danger};
+  }
 `;
 
 const Settings: React.FC = () => {
+  const { section } = useParams(); // Capture the section from the URL
   const [experience, setExperience] = useState<experienceSection | null>(null);
   const [skills, setSkills] = useState<skillsSection | null>(null);
-  const [hero, setHero] = useState<heroSection | null>(null);
   const [projects, setProjects] = useState<projectSection | null>(null);
-
   const [newExperience, setNewExperience] = useState({
     company: "",
-    description: "",
-    location: "",
     title: "",
+    location: "",
+    description: "",
+    companyLogo: "",
   });
-
-  const [newHeroText, setNewHeroText] = useState<string>("");
+  const [newSkill, setNewSkill] = useState({
+    category: "",
+    name: "",
+    icon: "",
+  });
   const [newProject, setNewProject] = useState({
     title: "",
     description: "",
-    link: "",
+    images: [] as string[], // Change image to an array of strings
   });
-
-  const [showExperience, setShowExperience] = useState<boolean>(true);
-  const [showSkills, setShowSkills] = useState<boolean>(true);
-  const [showHero, setShowHero] = useState<boolean>(true);
-  const [showProjects, setShowProjects] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
       const experienceData = await getData("homePage", "experienceSection");
       const skillsData = await getData("homePage", "skillsSection");
-      const heroData = await getData("homePage", "heroSection");
       const projectsData = await getData("homePage", "projectSection");
 
       if (experienceData) setExperience(experienceData as experienceSection);
       if (skillsData) setSkills(skillsData as skillsSection);
-      if (heroData) setHero(heroData as heroSection);
       if (projectsData) setProjects(projectsData as projectSection);
     };
 
     fetchData();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewExperience({
-      ...newExperience,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleHeroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewHeroText(e.target.value);
-  };
-
-  const handleProjectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewProject({
-      ...newProject,
-      [e.target.name]: e.target.value,
-    });
-  };
-
+  // Experience Section
   const handleAddExperience = async () => {
     if (experience) {
       const updatedExperience = {
         ...experience,
-        workExperienceData: [...experience.workExperienceData, newExperience],
+        workExperienceData: [
+          ...experience.workExperienceData,
+          {
+            company: newExperience.company,
+            title: newExperience.title,
+            location: newExperience.location,
+            description: newExperience.description,
+            companyLogo: newExperience.companyLogo, // Add the companyLogo
+          },
+        ],
       };
       await updateData("homePage", "experienceSection", updatedExperience);
       setExperience(updatedExperience);
       setNewExperience({
         company: "",
-        description: "",
-        location: "",
         title: "",
+        location: "",
+        description: "",
+        companyLogo: "", // Add the companyLogo
       });
     }
   };
 
-  const handleUpdateHero = async () => {
-    if (hero) {
-      const updatedHero = { ...hero, heroText: newHeroText };
-      await updateData("homePage", "heroSection", updatedHero);
-      setHero(updatedHero);
-      setNewHeroText("");
+  const handleDeleteExperience = async (index: number) => {
+    if (experience) {
+      const updatedExperience = {
+        ...experience,
+        workExperienceData: experience.workExperienceData.filter(
+          (_, i) => i !== index
+        ),
+      };
+      await updateData("homePage", "experienceSection", updatedExperience);
+      setExperience(updatedExperience);
     }
   };
 
+  // Skills Section
+  const handleAddSkill = async () => {
+    if (skills) {
+      const categoryExists = skills.skillsData.find(
+        (item) => item.category === newSkill.category
+      );
+      if (categoryExists) {
+        categoryExists.skills.push({
+          name: newSkill.name,
+          icon: newSkill.icon,
+        });
+      } else {
+        skills.skillsData.push({
+          category: newSkill.category,
+          skills: [{ name: newSkill.name, icon: newSkill.icon }],
+        });
+      }
+
+      await updateData("homePage", "skillsSection", skills);
+      setSkills({ ...skills });
+      setNewSkill({ category: "", name: "", icon: "" });
+    }
+  };
+
+  const handleDeleteSkill = async (category: string, index: number) => {
+    if (skills) {
+      const categoryIndex = skills.skillsData.findIndex(
+        (item) => item.category === category
+      );
+      if (categoryIndex !== -1) {
+        skills.skillsData[categoryIndex].skills.splice(index, 1);
+        await updateData("homePage", "skillsSection", skills);
+        setSkills({ ...skills });
+      }
+    }
+  };
+
+  // Projects Section
   const handleAddProject = async () => {
     if (projects) {
       const updatedProjects = {
         ...projects,
-        projects: [...projects.projects, newProject],
+        projects: [
+          ...projects.projects,
+          {
+            title: newProject.title,
+            description: newProject.description,
+            images: newProject.images, // Now we push the array of images
+          },
+        ],
       };
       await updateData("homePage", "projectSection", updatedProjects);
-      setProjects(updatedProjects as projectSection);
-      setNewProject({ title: "", description: "", link: "" });
+      setProjects(updatedProjects);
+      setNewProject({
+        title: "",
+        description: "",
+        images: [], // Reset to empty array
+      });
     }
   };
 
-  const handleSectionToggle = (section: string) => {
-    switch (section) {
+  const handleDeleteProject = async (index: number) => {
+    if (projects) {
+      const updatedProjects = {
+        ...projects,
+        projects: projects.projects.filter((_, i) => i !== index),
+      };
+      await updateData("homePage", "projectSection", updatedProjects);
+      setProjects(updatedProjects);
+    }
+  };
+
+  // Input field for adding more images
+  const handleAddImage = () => {
+    setNewProject((prev) => ({
+      ...prev,
+      images: [...prev.images, ""], // Add an empty string as placeholder for the new image URL
+    }));
+  };
+
+  // Render based on selected section
+  const renderSection = () => {
+    switch (
+      section // Use the section from the URL
+    ) {
       case "experience":
-        setShowExperience(!showExperience);
-        break;
+        return (
+          <SectionCard>
+            <SectionTitle>Experience</SectionTitle>
+            {experience &&
+              experience.workExperienceData.map((item, index) => (
+                <div key={index}>
+                  <p>
+                    {item.title} at {item.company}
+                  </p>
+                  <DeleteButton onClick={() => handleDeleteExperience(index)}>
+                    <FaTrash /> Delete
+                  </DeleteButton>
+                </div>
+              ))}
+            <InputField
+              type="text"
+              name="company"
+              placeholder="Company"
+              value={newExperience.company}
+              onChange={(e) =>
+                setNewExperience({ ...newExperience, company: e.target.value })
+              }
+            />
+            <InputField
+              type="text"
+              name="title"
+              placeholder="Title"
+              value={newExperience.title}
+              onChange={(e) =>
+                setNewExperience({ ...newExperience, title: e.target.value })
+              }
+            />
+            <InputField
+              type="text"
+              name="location"
+              placeholder="Location"
+              value={newExperience.location}
+              onChange={(e) =>
+                setNewExperience({ ...newExperience, location: e.target.value })
+              }
+            />
+            <InputField
+              type="text"
+              name="companyLogo"
+              placeholder="Company Logo URL"
+              value={newExperience.companyLogo}
+              onChange={(e) =>
+                setNewExperience({
+                  ...newExperience,
+                  companyLogo: e.target.value,
+                })
+              }
+            />
+            <InputField
+              type="text"
+              name="description"
+              placeholder="Description"
+              value={newExperience.description}
+              onChange={(e) =>
+                setNewExperience({
+                  ...newExperience,
+                  description: e.target.value,
+                })
+              }
+            />
+            <Button onClick={handleAddExperience}>
+              <FaPlus /> Experience
+            </Button>
+          </SectionCard>
+        );
       case "skills":
-        setShowSkills(!showSkills);
-        break;
-      case "hero":
-        setShowHero(!showHero);
-        break;
+        return (
+          <SectionCard>
+            <SectionTitle>Skills</SectionTitle>
+            {skills &&
+              skills.skillsData.map((category, categoryIndex) => (
+                <div key={categoryIndex}>
+                  <h3>{category.category}</h3>
+                  {category.skills.map((item, skillIndex) => (
+                    <div key={skillIndex}>
+                      <p>{item.name}</p>
+                      <DeleteButton
+                        onClick={() =>
+                          handleDeleteSkill(category.category, skillIndex)
+                        }
+                      >
+                        <FaTrash /> Delete
+                      </DeleteButton>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            <InputField
+              type="text"
+              name="category"
+              placeholder="Category"
+              value={newSkill.category}
+              onChange={(e) =>
+                setNewSkill({ ...newSkill, category: e.target.value })
+              }
+            />
+            <InputField
+              type="text"
+              name="name"
+              placeholder="Skill Name"
+              value={newSkill.name}
+              onChange={(e) =>
+                setNewSkill({ ...newSkill, name: e.target.value })
+              }
+            />
+            <InputField
+              type="text"
+              name="icon"
+              placeholder="Icon URL"
+              value={newSkill.icon}
+              onChange={(e) =>
+                setNewSkill({ ...newSkill, icon: e.target.value })
+              }
+            />
+            <Button onClick={handleAddSkill}>
+              <FaPlus /> Skill
+            </Button>
+          </SectionCard>
+        );
       case "projects":
-        setShowProjects(!showProjects);
-        break;
+        return (
+          <SectionCard>
+            <SectionTitle>Projects</SectionTitle>
+            {projects &&
+              projects.projects.map((item, index) => (
+                <div key={index}>
+                  <p>{item.title}</p>
+                  <DeleteButton onClick={() => handleDeleteProject(index)}>
+                    <FaTrash /> Delete
+                  </DeleteButton>
+                </div>
+              ))}
+            <InputField
+              type="text"
+              name="title"
+              placeholder="Project Title"
+              value={newProject.title}
+              onChange={(e) =>
+                setNewProject({ ...newProject, title: e.target.value })
+              }
+            />
+            <InputField
+              type="text"
+              name="description"
+              placeholder="Project Description"
+              value={newProject.description}
+              onChange={(e) =>
+                setNewProject({ ...newProject, description: e.target.value })
+              }
+            />
+            {/* Button to add more images */}
+            <Button onClick={handleAddImage}>
+              <FaPlus /> Image
+            </Button>
+            {newProject.images.map((image, index) => (
+              <InputField
+                key={index}
+                type="text"
+                name={`image-${index}`}
+                placeholder="Image URL"
+                value={image}
+                onChange={(e) => {
+                  const updatedImages = [...newProject.images];
+                  updatedImages[index] = e.target.value;
+                  setNewProject({ ...newProject, images: updatedImages });
+                }}
+              />
+            ))}
+            <Button onClick={handleAddProject}>
+              <FaPlus /> Project
+            </Button>
+          </SectionCard>
+        );
       default:
-        break;
+        return <div>Please select a section to edit.</div>;
     }
   };
 
-  return (
-    <SettingsWrapper>
-      <SectionTitle>Settings</SectionTitle>
-
-      <SectionCard>
-        <h3>Toggle Sections</h3>
-        <ToggleSection>
-          <label>
-            <input
-              type="checkbox"
-              checked={showExperience}
-              onChange={() => handleSectionToggle("experience")}
-            />
-            Edit Experience Section
-          </label>
-          <br />
-          <label>
-            <input
-              type="checkbox"
-              checked={showSkills}
-              onChange={() => handleSectionToggle("skills")}
-            />
-            Edit Skills Section
-          </label>
-          <br />
-          <label>
-            <input
-              type="checkbox"
-              checked={showHero}
-              onChange={() => handleSectionToggle("hero")}
-            />
-            Edit Hero Section
-          </label>
-          <br />
-          <label>
-            <input
-              type="checkbox"
-              checked={showProjects}
-              onChange={() => handleSectionToggle("projects")}
-            />
-            Edit Projects Section
-          </label>
-        </ToggleSection>
-      </SectionCard>
-
-      {/* Experience Section */}
-      {showExperience && (
-        <SectionCard>
-          <SectionTitle>Update Experience Section</SectionTitle>
-          {experience && (
-            <div>
-              <h3>Current Work Experiences</h3>
-              <ul>
-                {experience.workExperienceData.map((item, index) => (
-                  <li key={index}>
-                    {item.title} at {item.company}
-                  </li>
-                ))}
-              </ul>
-
-              <h3>Add New Work Experience</h3>
-              <InputField
-                type="text"
-                name="company"
-                placeholder="Company"
-                value={newExperience.company}
-                onChange={handleInputChange}
-              />
-              <InputField
-                type="text"
-                name="title"
-                placeholder="Title"
-                value={newExperience.title}
-                onChange={handleInputChange}
-              />
-              <InputField
-                type="text"
-                name="location"
-                placeholder="Location"
-                value={newExperience.location}
-                onChange={handleInputChange}
-              />
-              <InputField
-                type="text"
-                name="description"
-                placeholder="Description"
-                value={newExperience.description}
-                onChange={handleInputChange}
-              />
-              <Button onClick={handleAddExperience}>Add Experience</Button>
-            </div>
-          )}
-        </SectionCard>
-      )}
-
-      {/* Hero Section */}
-      {showHero && (
-        <SectionCard>
-          <SectionTitle>Update Hero Section</SectionTitle>
-          {hero && (
-            <div>
-              <h3>Current Hero Text</h3>
-              <p>{hero.heroText}</p>
-              <h3>Edit Hero Text</h3>
-              <InputField
-                type="text"
-                value={newHeroText}
-                onChange={handleHeroChange}
-                placeholder="Enter new hero text"
-              />
-              <Button onClick={handleUpdateHero}>Update Hero Text</Button>
-            </div>
-          )}
-        </SectionCard>
-      )}
-
-      {/* Projects Section */}
-      {showProjects && (
-        <SectionCard>
-          <SectionTitle>Update Projects Section</SectionTitle>
-          {projects && (
-            <div>
-              <h3>Current Projects</h3>
-              <ul>
-                {projects.projects.map((project, index) => (
-                  <li key={index}>
-                    {project.title} - {project.description}
-                  </li>
-                ))}
-              </ul>
-
-              <h3>Add New Project</h3>
-              <InputField
-                type="text"
-                name="title"
-                placeholder="Project Title"
-                value={newProject.title}
-                onChange={handleProjectChange}
-              />
-              <InputField
-                type="text"
-                name="description"
-                placeholder="Project Description"
-                value={newProject.description}
-                onChange={handleProjectChange}
-              />
-              <InputField
-                type="text"
-                name="link"
-                placeholder="Project Link"
-                value={newProject.link}
-                onChange={handleProjectChange}
-              />
-              <Button onClick={handleAddProject}>Add Project</Button>
-            </div>
-          )}
-        </SectionCard>
-      )}
-    </SettingsWrapper>
-  );
+  return <SettingsWrapper>{renderSection()}</SettingsWrapper>;
 };
 
 export default Settings;

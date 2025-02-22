@@ -1,8 +1,9 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { setPersistence, browserSessionPersistence } from "firebase/auth";
+
 
 const firebaseConfig = {
   apiKey: "REDACTED_API_KEY",
@@ -18,5 +19,14 @@ const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
+
+// Change the persistence to session storage
+setPersistence(auth, browserSessionPersistence)
+  .then(() => {
+    console.log("Auth persistence set to session storage");
+  })
+  .catch((error) => {
+    console.error("Error setting persistence:", error);
+  });
 
 export { app, auth, db, analytics, googleProvider };

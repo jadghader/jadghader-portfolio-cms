@@ -57,8 +57,9 @@ const AppContent = ({ toggleTheme, isDarkMode, cv }: any) => {
         <Route path="/auth/login" element={<Login />} />
 
         <Route path="/admin/*" element={<ProtectedRoutes />}>
-          <Route index element={<Navigate to="/admin/dashboard" />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="*" element={<Navigate to="/admin/dashboard" />} />
+
+          <Route path="settings/:section" element={<Settings />} />
           <Route path="dashboard" element={<AdminDashboard />} />
         </Route>
 

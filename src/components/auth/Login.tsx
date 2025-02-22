@@ -5,8 +5,6 @@ import { Snackbar, Alert, Slide, CircularProgress } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
 import styled from "styled-components";
 import { Visibility, VisibilityOff } from "@mui/icons-material"; // Import the eye icons
-import { FaHome } from "react-icons/fa"; // Importing the home icon
-
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -82,10 +80,6 @@ const Login: React.FC = () => {
 
   return (
     <LoginContainer>
-      <HomeButton onClick={() => (window.location.href = "/")}>
-        <FaHome size={24} />
-      </HomeButton>
-
       <LoginCard>
         <Form onSubmit={handleEmailLogin}>
           <Title>Login</Title>
@@ -147,21 +141,6 @@ const LoginContainer = styled.div`
   min-height: 100vh;
   background-color: ${({ theme }) => theme.background};
   padding-top: 50px;
-`;
-
-const HomeButton = styled.button`
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: ${({ theme }) => theme.text};
-  font-size: 1.8rem;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-
-  &:hover {
-    color: ${({ theme }) => theme.accent};
-  }
 `;
 
 const LoginCard = styled.div`

@@ -12,6 +12,7 @@ export const lightTheme = {
   disabled: "#D3D3D3", // Light gray for disabled elements
   borderColor: "#E0E0E0", // For consistent borders
   shadow: "rgba(0, 0, 0, 0.1)", // Subtle shadow for light mode
+  danger: "#DC3545", // Red for danger (error messages, destructive actions)
 };
 
 export const darkTheme = {
@@ -27,6 +28,7 @@ export const darkTheme = {
   disabled: "#555555", // Darker gray for disabled elements in dark mode
   borderColor: "#444444", // Subtle border for dark mode
   shadow: "rgba(0, 0, 0, 0.5)", // Softer shadow for dark mode
+  danger: "#FF6F61", // Light red for danger in dark mode
 };
 
 export type ThemeType = typeof lightTheme;
