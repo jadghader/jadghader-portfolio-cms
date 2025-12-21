@@ -3,7 +3,7 @@ import { Link } from "react-scroll";
 import { FaSun, FaMoon } from "react-icons/fa";
 import styled from "styled-components";
 import DownloadButton from "../styled-components/DownloadButton";
-import { useDeviceType } from "../../hooks/useDeviceType"; // Import your device hook
+import { useDeviceType } from "../../hooks/useDeviceType";
 import { ReactComponent as LightMenuBar } from "../../assets/light/light-menu.svg";
 import { ReactComponent as LightCloseBar } from "../../assets/light/light-close.svg";
 import { ReactComponent as DarkMenuBar } from "../../assets/dark/dark-menu.svg";
@@ -21,58 +21,52 @@ const Header: React.FC<HeaderProps> = ({
   isDarkMode,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const deviceType = useDeviceType(); // Get the device type (mobile, tablet, desktop)
+  const deviceType = useDeviceType();
 
-  const toggleMenu = () => {
-    setIsMenuOpen((prevState) => !prevState);
-  };
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const closeMenu = () => setIsMenuOpen(false);
 
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
-
-  // Lock scroll behavior when the menu is open
   useEffect(() => {
     if (isMenuOpen) {
-      document.body.style.overflow = "hidden"; // Disable vertical scrolling
-      document.body.style.position = "fixed"; // Prevent horizontal movement
-      document.body.style.width = "100%"; // Maintain full width
+      document.body.style.overflow = "hidden"; // lock page scroll
+      document.documentElement.style.overflow = "hidden"; // extra safety
     } else {
-      document.body.style.overflow = "auto"; // Restore scrolling
-      document.body.style.position = "static";
-      document.body.style.width = "auto";
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     }
 
     return () => {
-      document.body.style.overflow = "auto";
-      document.body.style.position = "static";
-      document.body.style.width = "auto";
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [isMenuOpen]);
 
   return (
-    <NavContainer isDarkMode={isDarkMode} deviceType={deviceType}>
-      {deviceType === "desktop" ? (
-        <DesktopHeader
-          onDownloadCV={onDownloadCV}
-          toggleTheme={toggleTheme}
-          isDarkMode={isDarkMode}
-          isMenuOpen={isMenuOpen} // Pass the isMenuOpen here
-        />
-      ) : (
-        <MobileHeader
-          onDownloadCV={onDownloadCV}
-          toggleTheme={toggleTheme}
-          isDarkMode={isDarkMode}
-          isMenuOpen={isMenuOpen}
-          toggleMenu={toggleMenu}
-          closeMenu={closeMenu}
-        />
-      )}
-    </NavContainer>
+    <>
+      <NavContainer isDarkMode={isDarkMode} deviceType={deviceType}>
+        {deviceType === "desktop" ? (
+          <DesktopHeader
+            onDownloadCV={onDownloadCV}
+            toggleTheme={toggleTheme}
+            isDarkMode={isDarkMode}
+            isMenuOpen={isMenuOpen}
+          />
+        ) : (
+          <MobileHeader
+            onDownloadCV={onDownloadCV}
+            toggleTheme={toggleTheme}
+            isDarkMode={isDarkMode}
+            isMenuOpen={isMenuOpen}
+            toggleMenu={toggleMenu}
+            closeMenu={closeMenu}
+          />
+        )}
+      </NavContainer>
+    </>
   );
 };
 
+// ==================== Desktop Header ====================
 const DesktopHeader: React.FC<HeaderProps & { isMenuOpen: boolean }> = ({
   onDownloadCV,
   toggleTheme,
@@ -82,20 +76,19 @@ const DesktopHeader: React.FC<HeaderProps & { isMenuOpen: boolean }> = ({
   return (
     <>
       <Logo to="/">
-        {" "}
         <span>Jad Ghader</span>
-      </Logo>{" "}
+      </Logo>
       <NavLinks isMenuOpen={isMenuOpen}>
-        <NavItem to="about" smooth={true} duration={500}>
+        <NavItem to="about" smooth duration={500}>
           About
         </NavItem>
-        <NavItem to="skills" smooth={true} duration={500}>
+        <NavItem to="skills" smooth duration={500}>
           Skills
         </NavItem>
-        <NavItem to="projects" smooth={true} duration={500}>
+        <NavItem to="projects" smooth duration={500}>
           Projects
         </NavItem>
-        <NavItem to="contact" smooth={true} duration={500}>
+        <NavItem to="contact" smooth duration={500}>
           Contact
         </NavItem>
         <DownloadButton onClick={onDownloadCV} />
@@ -107,6 +100,7 @@ const DesktopHeader: React.FC<HeaderProps & { isMenuOpen: boolean }> = ({
   );
 };
 
+// ==================== Mobile Header ====================
 const MobileHeader: React.FC<
   HeaderProps & {
     isMenuOpen: boolean;
@@ -124,7 +118,6 @@ const MobileHeader: React.FC<
   return (
     <>
       <Logo to="/">
-        {" "}
         <span>Jad Ghader</span>
       </Logo>
       <HamburgerButton onClick={toggleMenu}>
@@ -143,16 +136,16 @@ const MobileHeader: React.FC<
         </IconWrapper>
       </HamburgerButton>
       <NavLinks isMenuOpen={isMenuOpen}>
-        <NavItem to="about" smooth={true} duration={500} onClick={closeMenu}>
+        <NavItem to="about" smooth duration={500} onClick={closeMenu}>
           About
         </NavItem>
-        <NavItem to="skills" smooth={true} duration={500} onClick={closeMenu}>
+        <NavItem to="skills" smooth duration={500} onClick={closeMenu}>
           Skills
         </NavItem>
-        <NavItem to="projects" smooth={true} duration={500} onClick={closeMenu}>
+        <NavItem to="projects" smooth duration={500} onClick={closeMenu}>
           Projects
         </NavItem>
-        <NavItem to="contact" smooth={true} duration={500} onClick={closeMenu}>
+        <NavItem to="contact" smooth duration={500} onClick={closeMenu}>
           Contact
         </NavItem>
         <DownloadButton onClick={onDownloadCV} />
@@ -167,8 +160,7 @@ const MobileHeader: React.FC<
 
 export default Header;
 
-// Styled Components
-
+// ==================== Styled Components ====================
 const NavContainer = styled.nav<{
   isDarkMode: boolean;
   deviceType: "mobile" | "tablet" | "desktop";
@@ -183,9 +175,8 @@ const NavContainer = styled.nav<{
   z-index: 100;
   backdrop-filter: blur(10px);
   background: ${({ isDarkMode }) =>
-    isDarkMode ? "rgba(31, 31, 31, 0.6)" : "rgba(255, 255, 255, 0.7)"};
+    isDarkMode ? "rgba(31,31,31,0.6)" : "rgba(255,255,255,0.7)"};
   transition: background-color 0.3s ease-in-out;
-
   @media (max-width: 768px) {
     align-items: flex-start;
   }
@@ -195,17 +186,17 @@ const Logo = styled(Link)`
   display: flex;
   align-items: center;
   text-decoration: none;
-  gap: 10px; /* Space between logo and text */
+  gap: 10px;
 
   &::before {
     content: "J";
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px; /* Adjust size as needed */
+    width: 36px;
     height: 36px;
-    background-color: ${({ theme }) => theme.inputText}; /* Outer circle */
-    border-radius: 50%; /* Makes it a circle */
+    background-color: ${({ theme }) => theme.inputText};
+    border-radius: 50%;
     font-size: 24px;
     font-weight: bold;
     color: ${({ theme }) => theme.background};
@@ -224,7 +215,6 @@ const HamburgerButton = styled.button`
   border: none;
   cursor: pointer;
   z-index: 102;
-
   @media (max-width: 768px) {
     display: block;
   }
@@ -232,12 +222,11 @@ const HamburgerButton = styled.button`
 
 const IconWrapper = styled.div<{ isMenuOpen: boolean }>`
   position: relative;
-  width: 36px; /* Set consistent size */
+  width: 36px;
   height: 36px;
   display: flex;
   justify-content: center;
   align-items: center;
-
   svg {
     transition: transform 0.3s ease, opacity 0.3s ease;
     transform: ${({ isMenuOpen }) =>
@@ -249,7 +238,6 @@ const NavItem = styled(Link)`
   font-size: 1.2rem;
   color: ${({ theme }) => theme.text};
   text-decoration: none;
-
   &:hover {
     color: ${({ theme }) => theme.accent};
   }
@@ -262,7 +250,6 @@ const ThemeToggleButton = styled.button`
   font-size: 1.5rem;
   margin-top: 5px;
   cursor: pointer;
-
   &:hover {
     color: ${({ theme }) => theme.accent};
   }
@@ -275,25 +262,26 @@ const NavLinks = styled.div<{ isMenuOpen: boolean }>`
   transition: transform 0.3s ease, opacity 0.3s ease;
   z-index: 101;
 
-  @media (max-width: 768px) {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 100vw;
-    height: 100vh;
-    background: ${({ theme }) => theme.background};
-    border-left: 2px solid ${({ theme }) => theme.border};
-    transform: ${({ isMenuOpen }) =>
-      isMenuOpen ? "translateX(0)" : "translateX(100%)"};
-    opacity: ${({ isMenuOpen }) => (isMenuOpen ? 1 : 0)};
-    padding: 40px 20px;
-    box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    z-index: 101;
-    overflow: hidden;
-  }
+@media (max-width: 768px) {
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh; // MUST be 100vh
+  background: ${({ theme }) => theme.background};
+  border-left: 2px solid ${({ theme }) => theme.border};
+  transform: ${({ isMenuOpen }) =>
+    isMenuOpen ? "translate3d(0,0,0)" : "translate3d(100%,0,0)"};
+  opacity: ${({ isMenuOpen }) => (isMenuOpen ? 1 : 0)};
+  padding: 40px 20px;
+  box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  z-index: 101;
+  overflow-y: auto;   // scroll inside menu if needed
+  overflow-x: hidden;
+}
+
 `;
 
 const Overlay = styled.div<{ isMenuOpen: boolean }>`

@@ -75,7 +75,6 @@ const SectionContainer = styled.section`
   padding: 60px 20px;
   background-color: ${({ theme }) => theme.background};
   color: ${({ theme }) => theme.text};
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;

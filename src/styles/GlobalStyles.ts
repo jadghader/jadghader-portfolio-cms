@@ -11,7 +11,8 @@ const GlobalStyles = createGlobalStyle`
   }
   html, body {
     overflow-x: hidden; /* Prevent horizontal scroll */
-    width: 100%; /* Ensure the body takes up full width */
+        max-width: 100%;
+
   }
 
   body {

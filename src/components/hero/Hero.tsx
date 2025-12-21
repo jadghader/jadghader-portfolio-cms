@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FaLinkedin, FaGithub } from "react-icons/fa";
-import { doc, getDoc } from "firebase/firestore"; // Import Firestore methods
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
-import Skeleton from "@mui/material/Skeleton"; // Import MUI Skeleton for loader
+import Skeleton from "@mui/material/Skeleton";
 
 const HeroSection: React.FC = () => {
   const [typedText, setTypedText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [charIndex, setCharIndex] = useState(0);
-  const [heroContent, setHeroContent] = useState<any>(null); // State to hold Firestore content
+  const [heroContent, setHeroContent] = useState<any>(null);
   const imageUrl = `${process.env.PUBLIC_URL}/images/Jad-Ghader.jpeg`;
 
   // Fetch Firestore data
   useEffect(() => {
     const fetchHeroContent = async () => {
       try {
-        const docRef = doc(db, "homePage", "heroSection"); // Get hero content document
+        const docRef = doc(db, "homePage", "heroSection");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setHeroContent(docSnap.data());
@@ -27,10 +27,10 @@ const HeroSection: React.FC = () => {
         console.error("Error getting document:", error);
       }
     };
-
     fetchHeroContent();
   }, []);
 
+  // Typing effect
   useEffect(() => {
     if (!heroContent) return;
 
@@ -50,47 +50,51 @@ const HeroSection: React.FC = () => {
 
     const typingDelay = isDeleting ? 50 : 100;
     const timer = setTimeout(handleTyping, typingDelay);
-
     return () => clearTimeout(timer);
-  }, [charIndex, isDeleting, heroContent]); // Run when heroContent changes
+  }, [charIndex, isDeleting, heroContent]);
+
   if (!heroContent) {
     return (
       <HeroContainer>
-        <TextContainer>
-          <Skeleton variant="text" width="100%" height={40} />
-          <Skeleton variant="text" width="100%" height={30} />
-          <Skeleton variant="rectangular" width="100px" height="60px" />
-        </TextContainer>
-        <ImageContainer>
-          <Skeleton variant="circular" width={320} height={320} />
-        </ImageContainer>
+        <ContentWrapper>
+          <TextContainer>
+            <Skeleton variant="text" width="80%" height={40} />
+            <Skeleton variant="text" width="60%" height={30} />
+            <Skeleton variant="rectangular" width={100} height={60} />
+          </TextContainer>
+          <ImageContainer>
+            <Skeleton variant="circular" width={320} height={320} />
+          </ImageContainer>
+        </ContentWrapper>
       </HeroContainer>
     );
   }
 
   return (
     <HeroContainer>
-      <TextContainer>
-        <h1>{typedText}</h1>
-        <p>{heroContent.infoText}</p>
-        <SocialIcons>
-          {heroContent.socialLinks.map((link: any) => (
-            <a
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              key={link.name}
-            >
-              {link.name === "LinkedIn" ? <FaLinkedin /> : <FaGithub />}
-            </a>
-          ))}
-        </SocialIcons>
-      </TextContainer>
-      <ImageContainer>
-        <ImageWrapper>
-          <img src={imageUrl} alt="Jad Ghader" />
-        </ImageWrapper>
-      </ImageContainer>
+      <ContentWrapper>
+        <TextContainer>
+          <h1>{typedText}</h1>
+          <p>{heroContent.infoText}</p>
+          <SocialIcons>
+            {heroContent.socialLinks.map((link: any) => (
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                key={link.name}
+              >
+                {link.name === "LinkedIn" ? <FaLinkedin /> : <FaGithub />}
+              </a>
+            ))}
+          </SocialIcons>
+        </TextContainer>
+        <ImageContainer>
+          <ImageWrapper>
+            <img src={imageUrl} alt="Jad Ghader" />
+          </ImageWrapper>
+        </ImageContainer>
+      </ContentWrapper>
     </HeroContainer>
   );
 };
@@ -98,74 +102,66 @@ const HeroSection: React.FC = () => {
 export default HeroSection;
 
 // Styled Components
+
 const HeroContainer = styled.section`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 60px 20px 80px;
-  height: 100vh;
+  justify-content: center;
   background-color: ${({ theme }) => theme.background};
   border-bottom: 2px solid ${({ theme }) => theme.accent};
   position: relative;
   overflow: hidden;
-  flex-wrap: wrap; /* Allow wrapping in smaller screens */
+  padding: 60px 20px;
 
-  &:before {
-    content: "";
-    position: absolute;
-    top: -200px;
-    left: -200px;
-    width: 600px;
-    height: 600px;
-    background-color: ${({ theme }) => theme.accent};
-    border-radius: 50%;
-    opacity: 0.15;
-    z-index: 1;
-    transform: rotate(45deg);
-  }
 
   @media (max-width: 768px) {
-    flex-direction: column; /* Stack content and image */
-    height: 85vh; /* Allow height to adjust */
-    padding: 40px 20px;
+    padding: 48px 20px 60px;
 
     &:before {
-      /* Adjust the size and position of the circle on mobile */
-      top: -100px; /* Reduce the top offset */
-      left: -100px; /* Reduce the left offset */
-      width: 300px; /* Reduce the size of the circle */
-      height: 300px; /* Reduce the size of the circle */
+      top: -80px;
+      left: -80px;
+      width: 260px;
+      height: 260px;
     }
   }
 `;
+
+// Wrap content to center and add max-width
+const ContentWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(32px, 6vw, 120px);
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1200px; // centered content with left/right space
+`;
+
 const TextContainer = styled.div`
   flex: 1;
-  max-width: 50%;
+  max-width: 520px;
   color: ${({ theme }) => theme.text};
   z-index: 2;
 
   h1 {
-    font-size: 2.8rem;
-    font-weight: bold;
-    margin-bottom: 20px;
+    font-size: clamp(2.2rem, 3vw, 2.8rem);
+    font-weight: 700;
+    margin-bottom: 16px;
     line-height: 1.2;
   }
 
   p {
-    font-size: 1.2rem;
-    max-width: 450px;
+    font-size: 1.1rem;
     line-height: 1.6;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
+    max-width: 460px;
   }
 
   @media (max-width: 768px) {
     text-align: center;
-    max-width: 100%; /* Full width on smaller screens */
-    h1 {
-      font-size: 2rem; /* Smaller font size */
-    }
+    max-width: 100%;
+
     p {
-      font-size: 1rem; /* Smaller font size */
+      margin: 0 auto 18px;
     }
   }
 `;
@@ -192,45 +188,48 @@ const SocialIcons = styled.div`
 `;
 
 const ImageContainer = styled.div`
-  flex: 1;
+  flex: 1.2;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
+  z-index: 2;
 
   @media (max-width: 768px) {
-    width: 100%; /* Make image take full width on small screens */
+    flex: 1;
   }
 `;
 
 const ImageWrapper = styled.div`
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 320px;
-  height: 320px;
-  padding: 5px;
+  width: clamp(340px, 38vw, 440px);
+  height: clamp(340px, 38vw, 440px);
+  padding: 8px;
   background-color: ${({ theme }) => theme.accent};
   border-radius: 50%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
 
   img {
     width: 100%;
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 6px solid ${({ theme }) => theme.background};
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease-in-out;
+    border: 7px solid ${({ theme }) => theme.background};
+    transition: transform 0.35s ease;
 
     &:hover {
-      transform: scale(1.05);
+      transform: scale(1.07);
     }
   }
 
+  @media (max-width: 1024px) {
+    width: 360px;
+    height: 360px;
+  }
+
   @media (max-width: 768px) {
-    width: 280px; /* Reduce image size */
-    height: 280px; /* Maintain circular shape */
+    width: 300px;
+    height: 300px;
+    padding: 6px;
   }
 `;

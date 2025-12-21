@@ -55,8 +55,6 @@ const ContactForm: React.FC = () => {
 
   return (
     <SectionContainer id="contact">
-      <LeftBlobShape />
-      <RightBlobShape />
       <SectionTitle>Contact Me</SectionTitle>
       <FormWrapper>
         <Form onSubmit={handleSubmit}>
@@ -281,38 +279,5 @@ const PopupIcon = styled.img`
     100% {
       filter: blur(0);
     }
-  }
-`;
-
-const LeftBlobShape = styled.div`
-  position: absolute;
-  top: 20%;
-  left: -10%;
-  width: 300px;
-  height: 300px;
-  background-color: ${({ theme }) => theme.accent};
-  border-radius: 50%;
-  transform: rotate(45deg);
-  opacity: 0.1;
-  z-index: 0;
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-const RightBlobShape = styled.div`
-  position: absolute;
-  top: 20%;
-  right: -10%;
-  width: 300px;
-  height: 300px;
-  background-color: ${({ theme }) => theme.accent};
-  border-radius: 50%;
-  transform: rotate(45deg);
-  opacity: 0.1;
-  z-index: 0;
-
-  @media (max-width: 768px) {
-    display: none;
   }
 `;

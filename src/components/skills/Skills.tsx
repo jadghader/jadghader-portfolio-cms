@@ -58,8 +58,6 @@ const SkillsSection: React.FC = () => {
           </SkillsList>
         </SkillCategory>
       ))}
-      <LeftCircle deviceType={deviceType} />
-      <RightCircle deviceType={deviceType} />
     </SkillsSectionContainer>
   );
 };
@@ -178,30 +176,4 @@ const SkeletonCard = styled.div`
   height: 150px;
 `;
 
-const LeftCircle = styled.div<{ deviceType: "mobile" | "tablet" | "desktop" }>`
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: ${({ deviceType }) => (deviceType === "desktop" ? "-100px" : "-50px")};
-  width: ${({ deviceType }) => (deviceType === "desktop" ? "200px" : "100px")};
-  height: ${({ deviceType }) => (deviceType === "desktop" ? "200px" : "100px")};
-  background-color: ${({ theme }) => theme.accent};
-  border-radius: 50%;
-  opacity: 0.2;
-  z-index: 1;
-  transform: translateY(-50%);
-`;
 
-const RightCircle = styled.div<{ deviceType: "mobile" | "tablet" | "desktop" }>`
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: ${({ deviceType }) => (deviceType === "desktop" ? "-100px" : "-50px")};
-  width: ${({ deviceType }) => (deviceType === "desktop" ? "200px" : "100px")};
-  height: ${({ deviceType }) => (deviceType === "desktop" ? "200px" : "100px")};
-  background-color: ${({ theme }) => theme.accent};
-  border-radius: 50%;
-  opacity: 0.2;
-  z-index: 1;
-  transform: translateY(-50%);
-`;
