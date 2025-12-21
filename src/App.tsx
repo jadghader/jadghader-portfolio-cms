@@ -25,7 +25,7 @@ import AdminDashboard from "./components/admin/Dahboard";
 const App: React.FC = () => {
   const { isDarkMode, toggleTheme } = useTheme();
   const { isLoading: authLoading } = useAuth();
-  const cv = `${process.env.PUBLIC_URL}/cv/Jad-Ghader-CV.docx`;
+  const cv = "11aKfybAkdayJ-2c4puatRZNF2lFKqhob"; // Default CV file ID
 
   if (authLoading) return <Loader />;
 
