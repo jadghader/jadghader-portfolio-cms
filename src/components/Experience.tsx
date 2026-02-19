@@ -4,7 +4,6 @@ import { Briefcase, Calendar, MapPin, CheckCircle2, ChevronDown } from 'lucide-r
 import { useState, useEffect } from 'react';
 import {
   gradientTextMixin,
-  glassMixin,
   badgeMixin,
   sectionDividerTop,
   sectionDividerBottom,
@@ -380,43 +379,6 @@ const SkillChip = styled.span<{ $color: string }>`
   }
 `;
 
-// ── Stats row at bottom ──
-
-const StatsRow = styled(motion.div)`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-top: 4rem;
-  padding-top: 3rem;
-  border-top: 1px solid ${({ theme }) => theme.gradientDividerFaint};
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-`;
-
-const StatCard = styled(motion.div)`
-  ${glassMixin};
-  border-radius: 16px;
-  padding: 1.25rem 1rem;
-  text-align: center;
-  box-shadow: ${({ theme }) => theme.shadowCard};
-`;
-
-const StatNumber = styled.div`
-  font-size: 1.75rem;
-  font-weight: 900;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  ${gradientTextMixin};
-  line-height: 1;
-  margin-bottom: 6px;
-`;
-
-const StatLabel = styled.div`
-  font-size: 0.8rem;
-  color: ${({ theme }) => theme.foregroundSubtle};
-  font-weight: 500;
-`;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 

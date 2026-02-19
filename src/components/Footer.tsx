@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { motion } from "motion/react";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Linkedin } from "lucide-react";
 import { useState, useEffect } from "react";
 import { gradientBgMixin, gradientTextMixin } from "../styles/mixins";
 import { onDocSnapshot } from "../firebase/firestore";

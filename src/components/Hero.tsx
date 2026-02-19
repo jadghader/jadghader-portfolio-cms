@@ -254,11 +254,11 @@ const ChipLeft = styled(motion.div)`
   left: -40px;
 `;
 
-const ChipRight = styled(motion.div)`
-  ${ChipBase};
-  bottom: 18%;
-  right: -40px;
-`;
+// const ChipRight = styled(motion.div)`
+//   ${ChipBase};
+//   bottom: 18%;
+//   right: -40px;
+// `;
 
 const ChipIcon = styled.div<{ $violet?: boolean }>`
   width: 32px;

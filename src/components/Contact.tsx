@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { motion } from 'motion/react';
-import { Mail, MapPin, Phone, Send, ArrowRight } from 'lucide-react';
+import { Mail, MapPin, Phone, Send } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
   gradientTextMixin,
@@ -176,14 +176,7 @@ const InfoValue = styled.p`
   color: ${({ theme }) => theme.foreground};
 `;
 
-const InfoArrow = styled.div`
-  color: ${({ theme }) => theme.borderCard};
-  transition: color 0.2s ease;
 
-  ${InfoItem}:hover & {
-    color: ${({ theme }) => theme.primary};
-  }
-`;
 
 // ── Form column ──
 

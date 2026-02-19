@@ -162,11 +162,26 @@ const SkillTag = styled(motion.span)`
   cursor: default;
   transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 
   &:hover {
     background: ${({ theme }) => theme.skillTagHoverBg};
     border-color: ${({ theme }) => theme.skillTagHoverBorder};
     color: ${({ theme }) => theme.skillTagHoverText};
+  }
+`;
+
+const SkillIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+
+  ${SkillTag}:hover & {
+    opacity: 1;
   }
 `;
 
@@ -263,6 +278,15 @@ export function Skills() {
               <TagList>
                 {cat.skills.map((skill) => (
                   <SkillTag key={skill.name} whileHover={{ scale: 1.05 }}>
+                    {skill.icon && (
+                      <SkillIcon
+                        src={skill.icon}
+                        alt={skill.name}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    )}
                     {skill.name}
                   </SkillTag>
                 ))}
