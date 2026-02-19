@@ -1,74 +1,38 @@
-import React from "react";
-import { ThemeProvider } from "styled-components";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation,
-  Navigate,
-} from "react-router-dom";
-import GlobalStyles from "./styles/GlobalStyles";
-import { lightTheme, darkTheme } from "./styles/theme";
-import { useTheme } from "./hooks/useTheme";
-import NotFound from "./components/404/NotFound";
-import Footer from "./components/footer/Footer";
-import Header from "./components/header/Header";
-import Loader from "./components/styled-components/Loader";
-import { useAuth } from "./context/AuthContext";
-import ProtectedRoutes from "./routes/ProtectedRoutes";
-import { downloadCV } from "./utils/downloadCV"; // Import the utility function
-import Login from "./components/auth/Login";
-import Home from "./components/home/Home";
-import Settings from "./components/admin/Settings";
-import AdminDashboard from "./components/admin/Dahboard";
+import styled from "styled-components";
+import { Navigation } from "./components/Navigation";
+import { Hero } from "./components/Hero";
+import { About } from "./components/About";
+import { Projects } from "./components/Projects";
+import { Skills } from "./components/Skills";
+import { Contact } from "./components/Contact";
+import { Footer } from "./components/Footer";
+import { FloatingSocial } from "./components/FloatingSocial";
+import { AppThemeProvider } from "./context/ThemeContext";
+import { Experience } from "./components/Experience";
 
-const App: React.FC = () => {
-  const { isDarkMode, toggleTheme } = useTheme();
-  const { isLoading: authLoading } = useAuth();
-  const cv = "11aKfybAkdayJ-2c4puatRZNF2lFKqhob"; // Default CV file ID
+const PageWrapper = styled.div`
+  min-height: 100vh;
+  background: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.foreground};
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+`;
 
-  if (authLoading) return <Loader />;
-
+export default function App() {
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <GlobalStyles />
-      <Router>
-        <AppContent toggleTheme={toggleTheme} isDarkMode={isDarkMode} cv={cv} />
-      </Router>
-    </ThemeProvider>
+    <AppThemeProvider>
+      <PageWrapper>
+        <Navigation />
+        <FloatingSocial />
+        <Hero />
+        <About />
+        <Experience />
+        <Projects />
+        <Skills />
+        <Contact />
+        <Footer />
+      </PageWrapper>
+    </AppThemeProvider>
   );
-};
-
-const AppContent = ({ toggleTheme, isDarkMode, cv }: any) => {
-  const location = useLocation();
-  const isHomePage = location.pathname === "/"; // Check if the current path is the home page
-
-  return (
-    <>
-      {isHomePage && (
-        <Header
-          toggleTheme={toggleTheme}
-          isDarkMode={isDarkMode}
-          onDownloadCV={() => downloadCV(cv)}
-        />
-      )}
-
-      <Routes>
-        <Route path="/auth/login" element={<Login />} />
-
-        <Route path="/admin/*" element={<ProtectedRoutes />}>
-          <Route path="*" element={<Navigate to="/admin/dashboard" />} />
-
-          <Route path="settings/:section" element={<Settings />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-        </Route>
-
-        <Route path="/" element={<Home />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <Footer />
-    </>
-  );
-};
-
-export default App;
+}
