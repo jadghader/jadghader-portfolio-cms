@@ -11,7 +11,7 @@ import {
   sectionDividerTop,
   sectionDividerBottom,
 } from "../styles/mixins";
-import { onDocSnapshot } from "../firebase/firestore";
+import { getData } from "../firebase/firestore";
 import { ContactSkeletonLayout } from "./SkeletonLoader";
 import type { ContactDoc } from "../interfaces/firestore.interface";
 
@@ -374,16 +374,22 @@ export function Contact() {
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     // Initialize EmailJS
     const publicKey =
       process.env.REACT_APP_EMAILJS_PUBLIC_KEY || "YOUR_PUBLIC_KEY_HERE";
     emailjs.init(publicKey);
 
-    const unsubscribe = onDocSnapshot("siteContent", "contact", (data) => {
-      setContactData(data);
-    });
+    const loadContactData = async () => {
+      const data = await getData("siteContent", "contact");
+      if (isMounted) setContactData(data);
+    };
 
-    return () => unsubscribe();
+    loadContactData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (!contactData) {

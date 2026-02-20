@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Github, Linkedin } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { gradientBgMixin } from '../styles/mixins';
-import { onDocSnapshot } from '../firebase/firestore';
+import { getData } from '../firebase/firestore';
 import type { HeroDoc } from '../interfaces/firestore.interface';
 
 // ─── Styled Components ────────────────────────────────────────────────────────
@@ -91,10 +91,17 @@ export function FloatingSocial() {
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onDocSnapshot('siteContent', 'hero', (data) => {
-      setHeroData(data);
-    });
-    return () => unsubscribe();
+    let isMounted = true;
+
+    const loadHeroData = async () => {
+      const data = await getData('siteContent', 'hero');
+      if (isMounted) setHeroData(data);
+    };
+
+    loadHeroData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {

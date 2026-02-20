@@ -9,7 +9,7 @@ import {
   sectionDividerBottom,
 } from "../styles/mixins";
 import { ImageWithFallback } from "./ImageWithFallback";
-import { onDocSnapshot } from "../firebase/firestore";
+import { getData } from "../firebase/firestore";
 import { ProjectSkeletonLayout } from "./SkeletonLoader";
 import type { ProjectsDoc } from "../interfaces/firestore.interface";
 
@@ -244,12 +244,17 @@ export function Projects() {
   const [projectsData, setProjectsData] = useState<ProjectsDoc | null>(null);
 
   useEffect(() => {
-    // Subscribe to projects data from Firestore
-    const unsubscribe = onDocSnapshot("siteContent", "projects", (data) => {
-      setProjectsData(data);
-    });
+    let isMounted = true;
 
-    return () => unsubscribe();
+    const loadProjectsData = async () => {
+      const data = await getData("siteContent", "projects");
+      if (isMounted) setProjectsData(data);
+    };
+
+    loadProjectsData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (!projectsData) {

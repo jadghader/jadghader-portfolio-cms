@@ -8,7 +8,7 @@ import {
   sectionDividerTop,
   sectionDividerBottom,
 } from '../styles/mixins';
-import { onDocSnapshot } from '../firebase/firestore';
+import { getData } from '../firebase/firestore';
 import { ExperienceSkeletonLayout } from './SkeletonLoader';
 import type { ExperienceDoc } from '../interfaces/firestore.interface';
 
@@ -440,12 +440,17 @@ export function Experience() {
   const [openId, setOpenId] = useState<number | null>(1);
 
   useEffect(() => {
-    // Subscribe to experience data from Firestore
-    const unsubscribe = onDocSnapshot('siteContent', 'experience', (data) => {
-      setExperienceData(data);
-    });
+    let isMounted = true;
 
-    return () => unsubscribe();
+    const loadExperienceData = async () => {
+      const data = await getData('siteContent', 'experience');
+      if (isMounted) setExperienceData(data);
+    };
+
+    loadExperienceData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (!experienceData) {

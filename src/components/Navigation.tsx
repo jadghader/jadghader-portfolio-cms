@@ -4,7 +4,7 @@ import { Menu, X, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { gradientBgMixin, gradientTextMixin } from "../styles/mixins";
-import { onResumeUrlSnapshot } from "../firebase/firestore";
+import { getData } from "../firebase/firestore";
 
 // ─── Styled Components ────────────────────────────────────────────────────────
 
@@ -259,12 +259,17 @@ export function Navigation() {
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    // Subscribe to resume URL changes from Firestore
-    const unsubscribe = onResumeUrlSnapshot((url) => {
-      setResumeUrl(url);
-    });
+    let isMounted = true;
 
-    return () => unsubscribe();
+    const loadResumeUrl = async () => {
+      const data = await getData("siteContent", "navbar");
+      if (isMounted) setResumeUrl(data?.resumeUrl || null);
+    };
+
+    loadResumeUrl();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {

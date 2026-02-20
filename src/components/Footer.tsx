@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { Github, Linkedin } from "lucide-react";
 import { useState, useEffect } from "react";
 import { gradientBgMixin, gradientTextMixin } from "../styles/mixins";
-import { onDocSnapshot } from "../firebase/firestore";
+import { getData } from "../firebase/firestore";
 import type { FooterDoc } from "../interfaces/firestore.interface";
 
 // ─── Styled Components ────────────────────────────────────────────────────────
@@ -227,12 +227,17 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   useEffect(() => {
-    // Subscribe to footer data from Firestore
-    const unsubscribe = onDocSnapshot('siteContent', 'footer', (data) => {
-      setFooterData(data);
-    });
+    let isMounted = true;
 
-    return () => unsubscribe();
+    const loadFooterData = async () => {
+      const data = await getData('siteContent', 'footer');
+      if (isMounted) setFooterData(data);
+    };
+
+    loadFooterData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (!footerData) return null;

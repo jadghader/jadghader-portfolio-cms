@@ -11,7 +11,7 @@ import {
   sectionDividerTop,
   sectionDividerBottom,
 } from '../styles/mixins';
-import { onDocSnapshot } from '../firebase/firestore';
+import { getData } from '../firebase/firestore';
 import { AboutSkeletonLayout } from './SkeletonLoader';
 import type { AboutDoc } from '../interfaces/firestore.interface';
 
@@ -302,12 +302,17 @@ export function About() {
   const [aboutData, setAboutData] = useState<AboutDoc | null>(null);
 
   useEffect(() => {
-    // Subscribe to about data from Firestore
-    const unsubscribe = onDocSnapshot('siteContent', 'about', (data) => {
-      setAboutData(data);
-    });
+    let isMounted = true;
 
-    return () => unsubscribe();
+    const loadAboutData = async () => {
+      const data = await getData('siteContent', 'about');
+      if (isMounted) setAboutData(data);
+    };
+
+    loadAboutData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (!aboutData) {

@@ -8,7 +8,7 @@ import {
   sectionDividerTop,
   sectionDividerBottom,
 } from '../styles/mixins';
-import { onDocSnapshot } from '../firebase/firestore';
+import { getData } from '../firebase/firestore';
 import { SkillsSkeletonLayout } from './SkeletonLoader';
 import type { SkillsDoc } from '../interfaces/firestore.interface';
 
@@ -230,12 +230,17 @@ export function Skills() {
   const [skillsData, setSkillsData] = useState<SkillsDoc | null>(null);
 
   useEffect(() => {
-    // Subscribe to skills data from Firestore
-    const unsubscribe = onDocSnapshot('siteContent', 'skills', (data) => {
-      setSkillsData(data);
-    });
+    let isMounted = true;
 
-    return () => unsubscribe();
+    const loadSkillsData = async () => {
+      const data = await getData('siteContent', 'skills');
+      if (isMounted) setSkillsData(data);
+    };
+
+    loadSkillsData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (!skillsData) {

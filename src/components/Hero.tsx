@@ -15,7 +15,7 @@ import {
   ghostButtonMixin,
 } from '../styles/mixins';
 import { ImageWithFallback } from './ImageWithFallback';
-import { onDocSnapshot } from '../firebase/firestore';
+import { getData } from '../firebase/firestore';
 import { HeroSkeletonLayout } from './SkeletonLoader';
 import type { HeroDoc } from '../interfaces/firestore.interface';
 
@@ -333,12 +333,17 @@ export function Hero() {
   const [heroData, setHeroData] = useState<HeroDoc | null>(null);
 
   useEffect(() => {
-    // Subscribe to hero data from Firestore
-    const unsubscribe = onDocSnapshot('siteContent', 'hero', (data) => {
-      setHeroData(data);
-    });
+    let isMounted = true;
 
-    return () => unsubscribe();
+    const loadHeroData = async () => {
+      const data = await getData('siteContent', 'hero');
+      if (isMounted) setHeroData(data);
+    };
+
+    loadHeroData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (!heroData) {
