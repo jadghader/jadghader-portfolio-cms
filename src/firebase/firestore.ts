@@ -10,12 +10,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 
-/**
- * Read a single document from Firestore (one-time fetch)
- * @param collection Collection name
- * @param docId Document ID
- * @returns Document data or null
- */
+
 export const getData = async (
   collection: string,
   docId: string
@@ -36,12 +31,6 @@ export const getData = async (
   }
 };
 
-/**
- * Write or create a document in Firestore
- * @param collection Collection name
- * @param docId Document ID
- * @param data Data to write
- */
 export const setData = async (
   collection: string,
   docId: string,
@@ -57,12 +46,6 @@ export const setData = async (
   }
 };
 
-/**
- * Update specific fields in a document
- * @param collection Collection name
- * @param docId Document ID
- * @param data Partial data to update
- */
 export const updateData = async (
   collection: string,
   docId: string,
@@ -78,11 +61,6 @@ export const updateData = async (
   }
 };
 
-/**
- * Delete a document from Firestore
- * @param collection Collection name
- * @param docId Document ID
- */
 export const deleteData = async (
   collection: string,
   docId: string
@@ -97,13 +75,6 @@ export const deleteData = async (
   }
 };
 
-/**
- * Subscribe to real-time updates for a single document
- * @param collection Collection name
- * @param docId Document ID
- * @param callback Callback function called when document changes
- * @returns Unsubscribe function to stop listening
- */
 export const onDocSnapshot = (
   collection: string,
   docId: string,
@@ -132,11 +103,6 @@ export const onDocSnapshot = (
   }
 };
 
-/**
- * Subscribe to resume URL changes from navbar document
- * @param callback Callback function called when resume URL changes
- * @returns Unsubscribe function to stop listening
- */
 export const onResumeUrlSnapshot = (
   callback: (url: string | null) => void
 ): Unsubscribe => {

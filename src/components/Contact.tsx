@@ -1,7 +1,8 @@
-import styled from 'styled-components';
-import { motion } from 'motion/react';
-import { Mail, MapPin, Phone, Send } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import styled from "styled-components";
+import { motion } from "motion/react";
+import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { useState, useEffect } from "react";
+import emailjs from "emailjs-com";
 import {
   gradientTextMixin,
   glassMixin,
@@ -9,9 +10,9 @@ import {
   primaryButtonMixin,
   sectionDividerTop,
   sectionDividerBottom,
-} from '../styles/mixins';
-import { onDocSnapshot } from '../firebase/firestore';
-import type { ContactDoc } from '../interfaces/firestore.interface';
+} from "../styles/mixins";
+import { onDocSnapshot } from "../firebase/firestore";
+import type { ContactDoc } from "../interfaces/firestore.interface";
 
 // ─── WhatsApp icon (inline SVG since lucide doesn't have it) ─────────────────
 
@@ -77,7 +78,7 @@ const Title = styled.h2`
   font-weight: 800;
   color: ${({ theme }) => theme.foreground};
   margin-bottom: 1rem;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 `;
 
 const GradientWord = styled.span`
@@ -115,7 +116,7 @@ const InfoTitle = styled.h3`
   font-weight: 800;
   color: ${({ theme }) => theme.foreground};
   margin-bottom: 0.75rem;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 `;
 
 const InfoDesc = styled.p`
@@ -142,7 +143,11 @@ const InfoIcon = styled.div<{ $gradStart: string; $gradEnd: string }>`
   width: 46px;
   height: 46px;
   border-radius: 13px;
-  background: linear-gradient(135deg, ${({ $gradStart }) => $gradStart}, ${({ $gradEnd }) => $gradEnd});
+  background: linear-gradient(
+    135deg,
+    ${({ $gradStart }) => $gradStart},
+    ${({ $gradEnd }) => $gradEnd}
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -167,7 +172,7 @@ const InfoLabel = styled.p`
   text-transform: uppercase;
   color: ${({ theme }) => theme.foregroundSubtle};
   margin-bottom: 2px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 `;
 
 const InfoValue = styled.p`
@@ -175,8 +180,6 @@ const InfoValue = styled.p`
   font-weight: 500;
   color: ${({ theme }) => theme.foreground};
 `;
-
-
 
 // ── Form column ──
 
@@ -207,7 +210,7 @@ const Label = styled.label`
   font-size: 0.8125rem;
   font-weight: 700;
   color: ${({ theme }) => theme.foreground};
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   letter-spacing: 0.01em;
 `;
 
@@ -233,8 +236,9 @@ const Input = styled.input`
 
   &:focus {
     border-color: ${({ theme }) => theme.primary};
-    box-shadow: 0 0 0 3px ${({ theme }) =>
-      theme.isDark ? 'rgba(129,140,248,0.15)' : 'rgba(99,102,241,0.12)'};
+    box-shadow: 0 0 0 3px
+      ${({ theme }) =>
+        theme.isDark ? "rgba(129,140,248,0.15)" : "rgba(99,102,241,0.12)"};
   }
 `;
 
@@ -252,14 +256,32 @@ const Textarea = styled.textarea`
 
   &:focus {
     border-color: ${({ theme }) => theme.primary};
-    box-shadow: 0 0 0 3px ${({ theme }) =>
-      theme.isDark ? 'rgba(129,140,248,0.15)' : 'rgba(99,102,241,0.12)'};
+    box-shadow: 0 0 0 3px
+      ${({ theme }) =>
+        theme.isDark ? "rgba(129,140,248,0.15)" : "rgba(99,102,241,0.12)"};
   }
 `;
 
 const SubmitBtn = styled(motion.button)`
   ${primaryButtonMixin};
   width: 100%;
+  opacity: ${(props) => (props.disabled ? 0.6 : 1)};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+`;
+
+const SubmitMessage = styled(motion.div)<{ $isError?: boolean }>`
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: center;
+  background: ${(props) =>
+    props.$isError ? "rgba(239, 68, 68, 0.1)" : "rgba(34, 197, 94, 0.1)"};
+  color: ${(props) => (props.$isError ? "#ef4444" : "#22c55e")};
+  border: 1px solid
+    ${(props) =>
+      props.$isError ? "rgba(239, 68, 68, 0.3)" : "rgba(34, 197, 94, 0.3)"};
   margin-top: 0.25rem;
 `;
 
@@ -275,14 +297,16 @@ const WhatsAppBtn = styled(motion.a)`
   border-radius: 14px;
   border: none;
   cursor: pointer;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-weight: 700;
   font-size: 0.9375rem;
   color: #ffffff;
   background: linear-gradient(135deg, #22c55e, #16a34a);
   box-shadow: 0 8px 24px rgba(34, 197, 94, 0.35);
   text-decoration: none;
-  transition: box-shadow 0.2s ease, opacity 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
   margin-top: 1.5rem;
 
   &:hover {
@@ -297,7 +321,7 @@ const WhatsAppPulse = styled.span`
   align-items: center;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: -4px;
     border-radius: 50%;
@@ -306,20 +330,39 @@ const WhatsAppPulse = styled.span`
   }
 
   @keyframes wapulse {
-    0%, 100% { transform: scale(1); opacity: 0.5; }
-    50%       { transform: scale(1.5); opacity: 0; }
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
   }
 `;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-
 export function Contact() {
   const [contactData, setContactData] = useState<ContactDoc | null>(null);
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onDocSnapshot('siteContent', 'contact', (data) => {
+    // Initialize EmailJS
+    const publicKey =
+      process.env.REACT_APP_EMAILJS_PUBLIC_KEY || "YOUR_PUBLIC_KEY_HERE";
+    emailjs.init(publicKey);
+
+    const unsubscribe = onDocSnapshot("siteContent", "contact", (data) => {
       setContactData(data);
     });
 
@@ -330,19 +373,67 @@ export function Contact() {
   const displayData = contactData;
 
   const contactInfo = [
-    { icon: Mail, label: 'Email', value: displayData.email || 'N/A', gs: '#6366f1', ge: '#8b5cf6' },
-    { icon: Phone, label: 'Phone', value: displayData.phone || 'N/A', gs: '#3b82f6', ge: '#6366f1' },
-    { icon: MapPin, label: 'Location', value: displayData.location || 'N/A', gs: '#8b5cf6', ge: '#d946ef' },
+    {
+      icon: Mail,
+      label: "Email",
+      value: displayData.email || "N/A",
+      gs: "#6366f1",
+      ge: "#8b5cf6",
+    },
+    {
+      icon: Phone,
+      label: "Phone",
+      value: displayData.phone || "N/A",
+      gs: "#3b82f6",
+      ge: "#6366f1",
+    },
+    {
+      icon: MapPin,
+      label: "Location",
+      value: displayData.location || "N/A",
+      gs: "#8b5cf6",
+      ge: "#d946ef",
+    },
   ];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Thank you for your message! I will get back to you soon.');
-    setForm({ name: '', email: '', subject: '', message: '' });
+    setIsSubmitting(true);
+    setSubmitMessage("");
+    setIsError(false);
+
+    try {
+      const serviceId =
+        process.env.REACT_APP_EMAILJS_SERVICE_ID || "YOUR_SERVICE_ID_HERE";
+      const templateId =
+        process.env.REACT_APP_EMAILJS_TEMPLATE_ID || "YOUR_TEMPLATE_ID_HERE";
+
+      await emailjs.send(serviceId, templateId, {
+        to_email: `${displayData.formSubmissionEmail}`,
+        from_name: form.name,
+        from_email: form.email,
+        subject: form.subject,
+        message: form.message,
+      });
+
+      setSubmitMessage("✓ Thank you! Your message has been sent successfully.");
+      setIsError(false);
+      setForm({ name: "", email: "", subject: "", message: "" });
+
+      setTimeout(() => setSubmitMessage(""), 5000);
+    } catch (error) {
+      console.error("Error sending email:", error);
+      setSubmitMessage("✗ Failed to send message. Please try again.");
+      setIsError(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -357,10 +448,10 @@ export function Contact() {
           viewport={{ once: true }}
         >
           <BadgeEl>Contact</BadgeEl>
-          <Title>Let's <GradientWord>Work Together</GradientWord></Title>
-          <Subtitle>
-            {displayData.subtitle}
-          </Subtitle>
+          <Title>
+            Let's <GradientWord>Work Together</GradientWord>
+          </Title>
+          <Subtitle>{displayData.subtitle}</Subtitle>
         </Header>
 
         <ContentGrid>
@@ -372,9 +463,7 @@ export function Contact() {
             transition={{ duration: 0.6 }}
           >
             <InfoTitle>Get In Touch</InfoTitle>
-            <InfoDesc>
-              {displayData.description}
-            </InfoDesc>
+            <InfoDesc>{displayData.description}</InfoDesc>
 
             <InfoList>
               {contactInfo.map((item) => (
@@ -391,7 +480,7 @@ export function Contact() {
 
               {/* WhatsApp CTA */}
               <WhatsAppBtn
-                href={`https://wa.me/${displayData.phone?.replace(/\s/g, '')}`}
+                href={`https://wa.me/${displayData.phone?.replace(/\s/g, "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.02 }}
@@ -416,36 +505,74 @@ export function Contact() {
               <FormRow>
                 <FieldGroup>
                   <Label htmlFor="name">Name</Label>
-                  <Input id="name" name="name" type="text" placeholder="Your name"
-                    value={form.name} onChange={handleChange} required />
+                  <Input
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="Your name"
+                    value={form.name}
+                    onChange={handleChange}
+                    required
+                  />
                 </FieldGroup>
                 <FieldGroup>
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" name="email" type="email" placeholder="your@email.com"
-                    value={form.email} onChange={handleChange} required />
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={form.email}
+                    onChange={handleChange}
+                    required
+                  />
                 </FieldGroup>
               </FormRow>
 
-              <FieldGroup style={{ marginBottom: '1.25rem' }}>
+              <FieldGroup style={{ marginBottom: "1.25rem" }}>
                 <Label htmlFor="subject">Subject</Label>
-                <Input id="subject" name="subject" type="text" placeholder="How can I help?"
-                  value={form.subject} onChange={handleChange} required />
+                <Input
+                  id="subject"
+                  name="subject"
+                  type="text"
+                  placeholder="How can I help?"
+                  value={form.subject}
+                  onChange={handleChange}
+                  required
+                />
               </FieldGroup>
 
-              <FieldGroup style={{ marginBottom: '1.75rem' }}>
+              <FieldGroup style={{ marginBottom: "1.75rem" }}>
                 <Label htmlFor="message">Message</Label>
-                <Textarea id="message" name="message" placeholder="Tell me about your project..."
-                  value={form.message} onChange={handleChange} required />
+                <Textarea
+                  id="message"
+                  name="message"
+                  placeholder="Tell me about your project..."
+                  value={form.message}
+                  onChange={handleChange}
+                  required
+                />
               </FieldGroup>
 
               <SubmitBtn
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
+                disabled={isSubmitting}
               >
                 <Send size={18} />
-                Send Message
+                {isSubmitting ? "Sending..." : "Send Message"}
               </SubmitBtn>
+              {submitMessage && (
+                <SubmitMessage
+                  $isError={isError}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  {submitMessage}
+                </SubmitMessage>
+              )}
             </form>
           </FormCard>
         </ContentGrid>
