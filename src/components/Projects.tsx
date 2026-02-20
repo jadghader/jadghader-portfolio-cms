@@ -10,6 +10,7 @@ import {
 } from "../styles/mixins";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { onDocSnapshot } from "../firebase/firestore";
+import { ProjectSkeletonLayout } from "./SkeletonLoader";
 import type { ProjectsDoc } from "../interfaces/firestore.interface";
 
 // ─── Styled Components ────────────────────────────────────────────────────────
@@ -34,6 +35,18 @@ const OrbLeft = styled.div`
   background: ${({ theme }) => theme.gradientOrbA};
   filter: blur(100px);
   pointer-events: none;
+  will-change: transform;
+  
+  @media (max-width: 640px) {
+    filter: blur(60px);
+    width: 240px;
+    height: 240px;
+    left: -4rem;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;
 
 const Container = styled.div`
@@ -239,8 +252,26 @@ export function Projects() {
     return () => unsubscribe();
   }, []);
 
-  if (!projectsData) return null;
+  if (!projectsData) {
+    return (
+      <Section id="projects">
+        <Container>
+          <Header>
+            <Badge>Portfolio</Badge>
+            <Title>
+              Recent <GradientWord>Projects</GradientWord>
+            </Title>
+          </Header>
+          <Grid>
+            <ProjectSkeletonLayout count={3} />
+          </Grid>
+        </Container>
+      </Section>
+    );
+  }
+
   const displayProjects = projectsData.projects;
+
   return (
     <Section id="projects">
       <OrbLeft />

@@ -9,6 +9,7 @@ import { Footer } from "./components/Footer";
 import { FloatingSocial } from "./components/FloatingSocial";
 import { AppThemeProvider } from "./context/ThemeContext";
 import { Experience } from "./components/Experience";
+import { CustomCursor } from "./components/CustomCursor";
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -23,6 +24,7 @@ export default function App() {
   return (
     <AppThemeProvider>
       <PageWrapper>
+        <CustomCursor />
         <Navigation />
         <FloatingSocial />
         <Hero />

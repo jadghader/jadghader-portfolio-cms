@@ -12,6 +12,7 @@ import {
   sectionDividerBottom,
 } from '../styles/mixins';
 import { onDocSnapshot } from '../firebase/firestore';
+import { AboutSkeletonLayout } from './SkeletonLoader';
 import type { AboutDoc } from '../interfaces/firestore.interface';
 
 // ─── Styled Components ────────────────────────────────────────────────────────
@@ -36,6 +37,14 @@ const OrbRight = styled.div`
   background: ${({ theme }) => theme.gradientOrbA};
   filter: blur(80px);
   pointer-events: none;
+  will-change: transform;
+  
+  @media (max-width: 640px) {
+    filter: blur(50px);
+    width: 240px;
+    height: 240px;
+    right: -4rem;
+  }
 `;
 
 const Container = styled.div`
@@ -301,7 +310,24 @@ export function About() {
     return () => unsubscribe();
   }, []);
 
-  if (!aboutData) return null;
+  if (!aboutData) {
+    return (
+      <Section id="about">
+        <OrbRight />
+        <Container>
+          <Header>
+            <Badge>About Me</Badge>
+            <Title>
+              Crafting the Future with{' '}
+              <GradientWord>Code &amp; AI</GradientWord>
+            </Title>
+          </Header>
+          <AboutSkeletonLayout hasImage={true} />
+        </Container>
+      </Section>
+    );
+  }
+
   const displayData = aboutData;
 
   return (

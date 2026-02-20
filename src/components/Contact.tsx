@@ -12,6 +12,7 @@ import {
   sectionDividerBottom,
 } from "../styles/mixins";
 import { onDocSnapshot } from "../firebase/firestore";
+import { ContactSkeletonLayout } from "./SkeletonLoader";
 import type { ContactDoc } from "../interfaces/firestore.interface";
 
 // ─── WhatsApp icon (inline SVG since lucide doesn't have it) ─────────────────
@@ -43,6 +44,14 @@ const OrbLeft = styled.div`
   background: ${({ theme }) => theme.gradientOrbA};
   filter: blur(100px);
   pointer-events: none;
+  will-change: transform;
+  
+  @media (max-width: 640px) {
+    filter: blur(60px);
+    width: 240px;
+    height: 240px;
+    left: -4rem;
+  }
 `;
 
 const OrbRight = styled.div`
@@ -55,6 +64,14 @@ const OrbRight = styled.div`
   background: ${({ theme }) => theme.gradientOrbB};
   filter: blur(80px);
   pointer-events: none;
+  will-change: transform;
+  
+  @media (max-width: 640px) {
+    filter: blur(50px);
+    width: 200px;
+    height: 200px;
+    right: -3rem;
+  }
 `;
 
 const Container = styled.div`
@@ -369,7 +386,26 @@ export function Contact() {
     return () => unsubscribe();
   }, []);
 
-  if (!contactData) return null;
+  if (!contactData) {
+    return (
+      <Section id="contact">
+        <OrbLeft />
+        <OrbRight />
+        <Container>
+          <Header>
+            <BadgeEl>Contact</BadgeEl>
+            <Title>
+              Let's <GradientWord>Work Together</GradientWord>
+            </Title>
+          </Header>
+          <ContentGrid>
+            <ContactSkeletonLayout includeInfo={true} />
+          </ContentGrid>
+        </Container>
+      </Section>
+    );
+  }
+
   const displayData = contactData;
 
   const contactInfo = [

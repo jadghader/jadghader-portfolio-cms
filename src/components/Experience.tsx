@@ -9,6 +9,7 @@ import {
   sectionDividerBottom,
 } from '../styles/mixins';
 import { onDocSnapshot } from '../firebase/firestore';
+import { ExperienceSkeletonLayout } from './SkeletonLoader';
 import type { ExperienceDoc } from '../interfaces/firestore.interface';
 
 // ─── Styled Components ────────────────────────────────────────────────────────
@@ -37,6 +38,14 @@ const OrbTop = styled.div`
   background: ${({ theme }) => theme.gradientOrbA};
   filter: blur(110px);
   pointer-events: none;
+  will-change: transform;
+  
+  @media (max-width: 640px) {
+    filter: blur(60px);
+    width: 260px;
+    height: 260px;
+    right: -4rem;
+  }
 `;
 
 const OrbBot = styled.div`
@@ -49,6 +58,14 @@ const OrbBot = styled.div`
   background: ${({ theme }) => theme.gradientOrbC};
   filter: blur(90px);
   pointer-events: none;
+  will-change: transform;
+  
+  @media (max-width: 640px) {
+    filter: blur(60px);
+    width: 200px;
+    height: 200px;
+    left: -3rem;
+  }
 `;
 
 const Container = styled.div`
@@ -431,7 +448,27 @@ export function Experience() {
     return () => unsubscribe();
   }, []);
 
-  if (!experienceData) return null;
+  if (!experienceData) {
+    return (
+      <Section id="experience">
+        <OrbTop />
+        <OrbBot />
+        <Container>
+          <Header>
+            <Badge><Briefcase size={13} />Experience</Badge>
+            <Title>
+              Professional <GradientWord>Journey</GradientWord>
+            </Title>
+          </Header>
+          <Timeline>
+            <TimelineLine />
+            <ExperienceSkeletonLayout count={4} />
+          </Timeline>
+        </Container>
+      </Section>
+    );
+  }
+
   const displayData = experienceData;
 
   const toggle = (id: number) => setOpenId(openId === id ? null : id);

@@ -16,6 +16,7 @@ import {
 } from '../styles/mixins';
 import { ImageWithFallback } from './ImageWithFallback';
 import { onDocSnapshot } from '../firebase/firestore';
+import { HeroSkeletonLayout } from './SkeletonLoader';
 import type { HeroDoc } from '../interfaces/firestore.interface';
 
 // ─── Styled Components ────────────────────────────────────────────────────────
@@ -340,7 +341,19 @@ export function Hero() {
     return () => unsubscribe();
   }, []);
 
-  if (!heroData) return null;
+  if (!heroData) {
+    return (
+      <Section id="home">
+        <DotGrid />
+        <OrbA />
+        <OrbB />
+        <OrbC />
+        <Container>
+          <HeroSkeletonLayout />
+        </Container>
+      </Section>
+    );
+  }
   const displayData = heroData;
   
   const socialIconMap: Record<string, React.ReactNode> = {

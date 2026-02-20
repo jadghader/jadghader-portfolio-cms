@@ -9,6 +9,7 @@ import {
   sectionDividerBottom,
 } from '../styles/mixins';
 import { onDocSnapshot } from '../firebase/firestore';
+import { SkillsSkeletonLayout } from './SkeletonLoader';
 import type { SkillsDoc } from '../interfaces/firestore.interface';
 
 // ─── Styled Components ────────────────────────────────────────────────────────
@@ -32,6 +33,13 @@ const OrbBottom = styled.div`
   background: ${({ theme }) => theme.gradientOrbB};
   filter: blur(100px);
   pointer-events: none;
+  will-change: transform;
+  
+  @media (max-width: 640px) {
+    filter: blur(60px);
+    width: 240px;
+    height: 240px;
+  }
 `;
 
 const Container = styled.div`
@@ -230,7 +238,23 @@ export function Skills() {
     return () => unsubscribe();
   }, []);
 
-  if (!skillsData) return null;
+  if (!skillsData) {
+    return (
+      <Section id="skills">
+        <OrbBottom />
+        <Container>
+          <Header>
+            <Badge>Expertise</Badge>
+            <Title>Skills &amp; <GradientWord>Technologies</GradientWord></Title>
+          </Header>
+          <Grid>
+            <SkillsSkeletonLayout count={4} />
+          </Grid>
+        </Container>
+      </Section>
+    );
+  }
+
   const displayCategories = skillsData.categories;
 
   return (

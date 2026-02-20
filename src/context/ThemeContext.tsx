@@ -17,14 +17,35 @@ export function useTheme() {
   return useContext(ThemeContext);
 }
 
+/**
+ * Detects the user's theme preference from:
+ * 1. localStorage (if previously set)
+ * 2. system preference (prefers-color-scheme)
+ */
+function detectThemePreference(): boolean {
+  const saved = localStorage.getItem('sc-theme');
+  if (saved) {
+    return saved === 'dark';
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
 export function AppThemeProvider({ children }: { children: ReactNode }) {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState<boolean>(() => detectThemePreference());
 
   useEffect(() => {
-    const saved = localStorage.getItem('sc-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initial = saved ? saved === 'dark' : prefersDark;
-    setIsDark(initial);
+    // Listen for system theme preference changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleChange = (e: MediaQueryListEvent) => {
+      // Only update if no user preference is saved
+      if (!localStorage.getItem('sc-theme')) {
+        setIsDark(e.matches);
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
   const toggleTheme = () => {
