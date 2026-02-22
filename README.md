@@ -42,8 +42,8 @@ Primary collection pattern used:
   - About
   - Experience
   - Projects
-- Skills
-- Contact
+  - Skills
+  - Contact
 - **Dynamic content fetched from Firestore (`siteContent` documents)**
 - **Content-first workflow: update data in Firebase to refresh portfolio content without code edits**
 - Contact form powered by EmailJS
