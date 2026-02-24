@@ -1,16 +1,12 @@
 import styled, { css } from 'styled-components';
-import { motion } from 'motion/react';
-import {  Github, Linkedin, Mail, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Github, Linkedin, Mail } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
   gradientTextMixin,
   gradientBgMixin,
   glassMixin,
-  dotGridMixin,
-  floatAnim,
   pulseGlowAnim,
-  spinAnim,
-  badgeMixin,
   primaryButtonMixin,
   ghostButtonMixin,
 } from '../styles/mixins';
@@ -32,13 +28,6 @@ const Section = styled.section`
   background: ${({ theme }) => theme.background};
 `;
 
-const DotGrid = styled.div`
-  position: absolute;
-  inset: 0;
-  ${dotGridMixin};
-  opacity: 0.6;
-  pointer-events: none;
-`;
 
 const OrbA = styled.div`
   position: absolute;
@@ -100,11 +89,6 @@ const Grid = styled.div`
 `;
 
 const LeftCol = styled(motion.div)``;
-
-const AvailableBadge = styled(motion.div)`
-  ${badgeMixin};
-  margin-bottom: 2rem;
-`;
 
 const Heading = styled.h1`
   font-size: clamp(2.5rem, 5vw, 4.5rem);
@@ -191,7 +175,6 @@ const RightCol = styled(motion.div)`
 
 const ImageWrapper = styled.div`
   position: relative;
-  animation: ${floatAnim} 6s ease-in-out infinite;
 `;
 
 const GlowRing = styled.div`
@@ -209,7 +192,6 @@ const SpinRing = styled.div`
   border-radius: 50%;
   border: 2px dashed ${({ theme }) =>
     theme.isDark ? 'rgba(129,140,248,0.3)' : 'rgba(99,102,241,0.25)'};
-  animation: ${spinAnim} 20s linear infinite;
 `;
 
 const GradientBorder = styled.div`
@@ -349,7 +331,6 @@ export function Hero() {
   if (!heroData) {
     return (
       <Section id="home">
-        <DotGrid />
         <OrbA />
         <OrbB />
         <OrbC />
@@ -369,8 +350,7 @@ export function Hero() {
 
   return (
     <Section id="home">
-      <DotGrid />
-      <OrbA />
+=      <OrbA />
       <OrbB />
       <OrbC />
 
@@ -382,14 +362,6 @@ export function Hero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            <AvailableBadge
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Sparkles size={13} />
-              Available for new projects
-            </AvailableBadge>
 
             <Heading>
               Hi, I'm{' '}

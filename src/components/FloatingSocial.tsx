@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Github, Linkedin } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { gradientBgMixin } from '../styles/mixins';
@@ -124,56 +124,50 @@ export function FloatingSocial() {
     window.open(url, '_blank');
   };
 
-  return (
-    <AnimatePresence>
-      {pastHero && (
-        <Wrapper
-          initial={{ opacity: 0, x: 80 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 80 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          onMouseEnter={() => setExpanded(true)}
-          onMouseLeave={() => setExpanded(false)}
-        >
-          <IconList>
-            {socialLinks.map(({ name, url, icon }, i) => (
-              <IconRow
-                key={name}
-                as="button"
-                onClick={() => handleSocialClick(url)}
-                aria-label={name}
-                initial={{ x: 60, opacity: 0 }}
-                animate={{ x: expanded ? 0 : 44, opacity: 1 }}
-                transition={{ delay: i * 0.05, duration: 0.3, ease: 'easeOut' }}
-                style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
-              >
-                <AnimatePresence>
-                  {expanded && (
-                    <Tooltip
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 10 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {name}
-                    </Tooltip>
-                  )}
-                </AnimatePresence>
-                <IconBubble whileHover={{ scale: 1.12 }} whileTap={{ scale: 0.92 }}>
-                  {socialIconMap[(icon || 'Github') as string] || <Github size={18} />}
-                </IconBubble>
-              </IconRow>
-            ))}
-          </IconList>
+  if (!pastHero) return null;
 
-          {!expanded && (
-            <PeekBar
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.7 }}
-            />
-          )}
-        </Wrapper>
+  return (
+    <Wrapper
+      initial={{ opacity: 0, x: 80 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+      onMouseEnter={() => setExpanded(true)}
+      onMouseLeave={() => setExpanded(false)}
+    >
+      <IconList>
+        {socialLinks.map(({ name, url, icon }, i) => (
+          <IconRow
+            key={name}
+            as="button"
+            onClick={() => handleSocialClick(url)}
+            aria-label={name}
+            initial={{ x: 60, opacity: 0 }}
+            animate={{ x: expanded ? 0 : 44, opacity: 1 }}
+            transition={{ delay: i * 0.05, duration: 0.3, ease: 'easeOut' }}
+            style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
+          >
+            {expanded && (
+              <Tooltip
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {name}
+              </Tooltip>
+            )}
+            <IconBubble whileHover={{ scale: 1.12 }} whileTap={{ scale: 0.92 }}>
+              {socialIconMap[(icon || 'Github') as string] || <Github size={18} />}
+            </IconBubble>
+          </IconRow>
+        ))}
+      </IconList>
+
+      {!expanded && (
+        <PeekBar
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.7 }}
+        />
       )}
-    </AnimatePresence>
+    </Wrapper>
   );
 }

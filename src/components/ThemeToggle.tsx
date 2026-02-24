@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Code, Database, Server, Brain } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {

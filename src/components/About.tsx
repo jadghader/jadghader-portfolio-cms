@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Briefcase } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { useState, useEffect } from 'react';

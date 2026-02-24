@@ -1,5 +1,5 @@
-import styled, { keyframes } from 'styled-components';
-import { motion } from 'motion/react';
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
 import { Briefcase, Calendar, MapPin, CheckCircle2, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
@@ -13,11 +13,6 @@ import { ExperienceSkeletonLayout } from './SkeletonLoader';
 import type { ExperienceDoc } from '../interfaces/firestore.interface';
 
 // ─── Styled Components ────────────────────────────────────────────────────────
-
-const expandAnim = keyframes`
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-`;
 
 const Section = styled.section`
   position: relative;
@@ -305,8 +300,7 @@ const ChevronBtn = styled(motion.div)<{ $open: boolean }>`
   justify-content: center;
   color: ${({ theme }) => theme.foregroundMuted};
   flex-shrink: 0;
-  rotate: ${({ $open }) => ($open ? '180deg' : '0deg')};
-  transition: rotate 0.3s ease, background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 
   &:hover {
     color: ${({ theme }) => theme.primary};
@@ -318,8 +312,8 @@ const ChevronBtn = styled(motion.div)<{ $open: boolean }>`
 // ── Expanded body ──
 
 const CardBody = styled(motion.div)`
-  padding: 0 1.5rem 1.5rem;
-  animation: ${expandAnim} 0.25s ease both;
+  padding: 0 1.5rem;
+  overflow: hidden;
 
   @media (min-width: 640px) {
     padding: 0 2rem 2rem;
@@ -418,7 +412,7 @@ function LogoDisplay({ image, initials, logoGradStart, logoGradEnd, isOpen }: Lo
       $hasImage={hasImage}
       style={
         isOpen
-          ? { transform: 'scale(1.08)', boxShadow: `0 12px 32px ${logoGradStart}55` }
+          ? { transform: 'scale(1.08)' }
           : {}
       }
     >
@@ -546,38 +540,49 @@ export function Experience() {
                     </CompanyRow>
                   </CardHeaderLeft>
 
-                  <ChevronBtn $open={openId === exp.id} whileTap={{ scale: 0.9 }}>
+                  <ChevronBtn
+                    $open={openId === exp.id}
+                    whileTap={{ scale: 0.9 }}
+                    animate={{ rotate: openId === exp.id ? 180 : 0 }}
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  >
                     <ChevronDown size={16} />
                   </ChevronBtn>
                 </CardHeader>
 
-                {openId === exp.id && (
-                  <CardBody>
-                    <Divider />
-                    <Description>{exp.description}</Description>
+                <CardBody
+                  initial={false}
+                  animate={
+                    openId === exp.id
+                      ? { height: 'auto', opacity: 1, paddingBottom: '1.5rem' }
+                      : { height: 0, opacity: 0, paddingBottom: 0 }
+                  }
+                  transition={{ duration: 0.25, ease: 'easeInOut' }}
+                >
+                  <Divider />
+                  <Description>{exp.description}</Description>
 
-                    <HighlightsTitle>Key Achievements</HighlightsTitle>
-                    <HighlightList>
-                      {exp.highlights.map((h, j) => (
-                        <HighlightItem key={j} $color={exp.accentColor}>
-                          <CheckCircle2 size={16} />
-                          {h}
-                        </HighlightItem>
-                      ))}
-                    </HighlightList>
+                  <HighlightsTitle>Key Achievements</HighlightsTitle>
+                  <HighlightList>
+                    {exp.highlights.map((h, j) => (
+                      <HighlightItem key={j} $color={exp.accentColor}>
+                        <CheckCircle2 size={16} />
+                        {h}
+                      </HighlightItem>
+                    ))}
+                  </HighlightList>
 
-                    <HighlightsTitle style={{ marginBottom: '0.75rem' }}>
-                      Tech Stack
-                    </HighlightsTitle>
-                    <SkillsRow>
-                      {exp.skills.map((s) => (
-                        <SkillChip key={s} $color={exp.accentColor}>
-                          {s}
-                        </SkillChip>
-                      ))}
-                    </SkillsRow>
-                  </CardBody>
-                )}
+                  <HighlightsTitle style={{ marginBottom: '0.75rem' }}>
+                    Tech Stack
+                  </HighlightsTitle>
+                  <SkillsRow>
+                    {exp.skills.map((s) => (
+                      <SkillChip key={s} $color={exp.accentColor}>
+                        {s}
+                      </SkillChip>
+                    ))}
+                  </SkillsRow>
+                </CardBody>
               </Card>
             </Entry>
           ))}
