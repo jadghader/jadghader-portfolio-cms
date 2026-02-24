@@ -1,7 +1,7 @@
-import styled, { css } from 'styled-components';
-import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import styled, { css } from "styled-components";
+import { motion } from "framer-motion";
+import { Github, Linkedin, Mail } from "lucide-react";
+import { useState, useEffect } from "react";
 import {
   gradientTextMixin,
   gradientBgMixin,
@@ -9,11 +9,11 @@ import {
   pulseGlowAnim,
   primaryButtonMixin,
   ghostButtonMixin,
-} from '../styles/mixins';
-import { ImageWithFallback } from './ImageWithFallback';
-import { getData } from '../firebase/firestore';
-import { HeroSkeletonLayout } from './SkeletonLoader';
-import type { HeroDoc } from '../interfaces/firestore.interface';
+} from "../styles/mixins";
+import { ImageWithFallback } from "./ImageWithFallback";
+import { getData } from "../firebase/firestore";
+import { HeroSkeletonLayout } from "./SkeletonLoader";
+import type { HeroDoc } from "../interfaces/firestore.interface";
 
 // ─── Styled Components ────────────────────────────────────────────────────────
 
@@ -27,7 +27,6 @@ const Section = styled.section`
   overflow: hidden;
   background: ${({ theme }) => theme.background};
 `;
-
 
 const OrbA = styled.div`
   position: absolute;
@@ -64,7 +63,7 @@ const OrbC = styled.div`
   height: 600px;
   border-radius: 50%;
   background: ${({ theme }) =>
-    theme.isDark ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.05)'};
+    theme.isDark ? "rgba(99,102,241,0.06)" : "rgba(99,102,241,0.05)"};
   filter: blur(120px);
   pointer-events: none;
 `;
@@ -96,7 +95,7 @@ const Heading = styled.h1`
   color: ${({ theme }) => theme.foreground};
   margin-bottom: 1.25rem;
   line-height: 1.1;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 `;
 
 const GradientName = styled.span`
@@ -155,13 +154,13 @@ const SocialBtn = styled(motion.a)`
   color: ${({ theme }) => theme.foregroundMuted};
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
   &:hover {
     ${gradientBgMixin};
     color: #ffffff;
     border-color: transparent;
-    box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
     transform: translateY(-2px);
   }
 `;
@@ -190,8 +189,9 @@ const SpinRing = styled.div`
   position: absolute;
   inset: -12px;
   border-radius: 50%;
-  border: 2px dashed ${({ theme }) =>
-    theme.isDark ? 'rgba(129,140,248,0.3)' : 'rgba(99,102,241,0.25)'};
+  border: 2px dashed
+    ${({ theme }) =>
+      theme.isDark ? "rgba(129,140,248,0.3)" : "rgba(99,102,241,0.25)"};
 `;
 
 const GradientBorder = styled.div`
@@ -253,9 +253,9 @@ const ChipIcon = styled.div<{ $violet?: boolean }>`
   font-size: 0.75rem;
   font-weight: 800;
   color: #fff;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   background: ${({ $violet, theme }) =>
-    $violet ? '#8b5cf6' : theme.gradientPrimary};
+    $violet ? "#8b5cf6" : theme.gradientPrimary};
   flex-shrink: 0;
 `;
 
@@ -264,7 +264,7 @@ const ChipLabel = styled.p`
   font-size: 0.7rem;
   font-weight: 800;
   color: ${({ theme }) => theme.foreground};
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 `;
 const ChipSub = styled.p`
   font-size: 0.65rem;
@@ -292,8 +292,9 @@ const ScrollMouse = styled(motion.div)`
   width: 22px;
   height: 34px;
   border-radius: 11px;
-  border: 2px solid ${({ theme }) =>
-    theme.isDark ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.25)'};
+  border: 2px solid
+    ${({ theme }) =>
+      theme.isDark ? "rgba(99,102,241,0.3)" : "rgba(99,102,241,0.25)"};
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -318,7 +319,7 @@ export function Hero() {
     let isMounted = true;
 
     const loadHeroData = async () => {
-      const data = await getData('siteContent', 'hero');
+      const data = await getData("siteContent", "hero");
       if (isMounted) setHeroData(data);
     };
 
@@ -341,7 +342,7 @@ export function Hero() {
     );
   }
   const displayData = heroData;
-  
+
   const socialIconMap: Record<string, React.ReactNode> = {
     Github: <Github size={20} />,
     Linkedin: <Linkedin size={20} />,
@@ -350,7 +351,7 @@ export function Hero() {
 
   return (
     <Section id="home">
-=      <OrbA />
+      <OrbA />
       <OrbB />
       <OrbC />
 
@@ -360,32 +361,36 @@ export function Hero() {
           <LeftCol
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-
             <Heading>
-              Hi, I'm{' '}
-              <GradientName>Jad Ghader</GradientName>
+              Hi, I'm <GradientName>Jad Ghader</GradientName>
             </Heading>
 
             <Subtitle>{displayData.heroText}</Subtitle>
 
-            <Description>
-              {displayData.infoText}
-            </Description>
+            <Description>{displayData.infoText}</Description>
 
             <ButtonRow>
               <PrimaryBtn
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .querySelector("#projects")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
               >
                 View My Work
               </PrimaryBtn>
               <GhostBtn
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .querySelector("#contact")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
               >
                 Contact Me
               </GhostBtn>
@@ -402,7 +407,9 @@ export function Hero() {
                   whileHover={{ scale: 1.12 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {socialIconMap[(icon || 'Github') as string] || <Github size={20} />}
+                  {socialIconMap[(icon || "Github") as string] || (
+                    <Github size={20} />
+                  )}
                 </SocialBtn>
               ))}
             </SocialRow>
@@ -412,7 +419,7 @@ export function Hero() {
           <RightCol
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           >
             <ImageWrapper>
               <GlowRing />
@@ -439,7 +446,6 @@ export function Hero() {
                   <ChipSub>Experience</ChipSub>
                 </ChipText>
               </ChipLeft>
-
             </ImageWrapper>
           </RightCol>
         </Grid>
@@ -454,7 +460,11 @@ export function Hero() {
           <ScrollMouse>
             <ScrollDot
               animate={{ y: [0, 8, 0] }}
-              transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.8,
+                ease: "easeInOut",
+              }}
             />
           </ScrollMouse>
         </ScrollIndicator>
