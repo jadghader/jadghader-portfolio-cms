@@ -8,7 +8,6 @@ service cloud.firestore {
 
     function emailInAllowlist() {
       return isSignedIn()
-        && request.auth.token.email_verified == true
         && request.auth.token.email is string
         && exists(/databases/$(database)/documents/security/contentEditors)
         && request.auth.token.email in get(/databases/$(database)/documents/security/contentEditors).data.emails;

@@ -29,6 +29,7 @@ try {
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);

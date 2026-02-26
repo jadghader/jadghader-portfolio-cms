@@ -127,6 +127,33 @@ Content flow:
 2. App fetches data via `src/firebase/firestore.ts`
 3. Sections render updated content dynamically
 
+### CMS Access Allowlist Document
+
+Create this document in Firestore to control CMS access:
+
+- Collection: `security`
+- Document ID: `contentEditors`
+- Shape:
+
+```json
+{
+  "emails": [
+    "email@example.com"
+  ]
+}
+```
+
+Only authenticated users whose verified email is listed in `emails` can write to `siteContent`.
+
+### CMS Route
+
+- URL: `/cms`
+- Auth methods:
+  - Email/password sign-in
+  - Google sign-in
+- Access control:
+  - If signed-in user email is not in `security/contentEditors.emails`, user is signed out immediately.
+
 ## Deployment
 
 Production is configured via Firebase Hosting (`firebase.json`) with SPA rewrites:
