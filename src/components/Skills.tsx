@@ -1,14 +1,13 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { Code, Database, Server, Brain } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import {
   gradientTextMixin,
   badgeMixin,
   sectionDividerTop,
   sectionDividerBottom,
 } from '../styles/mixins';
-import { getData } from '../firebase/firestore';
+import { useSiteContent } from '../context/SiteContentContext';
 import { SkillsSkeletonLayout } from './SkeletonLoader';
 import type { SkillsDoc } from '../interfaces/firestore.interface';
 
@@ -227,23 +226,10 @@ const skillCategoryColors: Record<string, { gradientStart: string; gradientEnd: 
 };
 
 export function Skills() {
-  const [skillsData, setSkillsData] = useState<SkillsDoc | null>(null);
+  const { docs, loaded } = useSiteContent();
+  const skillsData = (docs.skills as SkillsDoc | null) || null;
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadSkillsData = async () => {
-      const data = await getData('siteContent', 'skills');
-      if (isMounted) setSkillsData(data);
-    };
-
-    loadSkillsData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (!skillsData) {
+  if (!loaded || !skillsData) {
     return (
       <Section id="skills">
         <OrbBottom />

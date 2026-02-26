@@ -4,7 +4,7 @@ import { Menu, X, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { gradientBgMixin, gradientTextMixin } from "../styles/mixins";
-import { getData } from "../firebase/firestore";
+import { useSiteContent } from "../context/SiteContentContext";
 
 // ─── Styled Components ────────────────────────────────────────────────────────
 
@@ -256,21 +256,8 @@ const navItems = [
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [resumeUrl, setResumeUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadResumeUrl = async () => {
-      const data = await getData("siteContent", "navbar");
-      if (isMounted) setResumeUrl(data?.resumeUrl || null);
-    };
-
-    loadResumeUrl();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const { docs } = useSiteContent();
+  const resumeUrl = docs.navbar?.resumeUrl || null;
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);

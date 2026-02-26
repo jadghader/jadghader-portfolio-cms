@@ -1,9 +1,8 @@
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { Github, Linkedin } from "lucide-react";
-import { useState, useEffect } from "react";
 import { gradientBgMixin, gradientTextMixin } from "../styles/mixins";
-import { getData } from "../firebase/firestore";
+import { useSiteContent } from "../context/SiteContentContext";
 import type { FooterDoc } from "../interfaces/firestore.interface";
 
 // ─── Styled Components ────────────────────────────────────────────────────────
@@ -223,24 +222,11 @@ const defaultQuickLinks = [
 ];
 
 export function Footer() {
-  const [footerData, setFooterData] = useState<FooterDoc | null>(null);
+  const { docs, loaded } = useSiteContent();
+  const footerData = (docs.footer as FooterDoc | null) || null;
   const year = new Date().getFullYear();
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadFooterData = async () => {
-      const data = await getData('siteContent', 'footer');
-      if (isMounted) setFooterData(data);
-    };
-
-    loadFooterData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (!footerData) return null;
+  if (!loaded || !footerData) return null;
   const displayData = footerData;
 
   const scrollTo = (id: string) =>

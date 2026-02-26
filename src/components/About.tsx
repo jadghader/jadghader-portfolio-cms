@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { Briefcase } from 'lucide-react';
 import * as Icons from 'lucide-react';
-import { useState, useEffect } from 'react';
 import {
   gradientTextMixin,
   gradientBgMixin,
@@ -11,7 +10,7 @@ import {
   sectionDividerTop,
   sectionDividerBottom,
 } from '../styles/mixins';
-import { getData } from '../firebase/firestore';
+import { useSiteContent } from '../context/SiteContentContext';
 import { AboutSkeletonLayout } from './SkeletonLoader';
 import type { AboutDoc } from '../interfaces/firestore.interface';
 
@@ -299,23 +298,10 @@ const HighlightDesc = styled.p`
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function About() {
-  const [aboutData, setAboutData] = useState<AboutDoc | null>(null);
+  const { docs, loaded } = useSiteContent();
+  const aboutData = (docs.about as AboutDoc | null) || null;
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadAboutData = async () => {
-      const data = await getData('siteContent', 'about');
-      if (isMounted) setAboutData(data);
-    };
-
-    loadAboutData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (!aboutData) {
+  if (!loaded || !aboutData) {
     return (
       <Section id="about">
         <OrbRight />

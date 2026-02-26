@@ -11,7 +11,7 @@ import {
   sectionDividerTop,
   sectionDividerBottom,
 } from "../styles/mixins";
-import { getData } from "../firebase/firestore";
+import { useSiteContent } from "../context/SiteContentContext";
 import { ContactSkeletonLayout } from "./SkeletonLoader";
 import type { ContactDoc } from "../interfaces/firestore.interface";
 
@@ -362,7 +362,8 @@ const WhatsAppPulse = styled.span`
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function Contact() {
-  const [contactData, setContactData] = useState<ContactDoc | null>(null);
+  const { docs, loaded } = useSiteContent();
+  const contactData = (docs.contact as ContactDoc | null) || null;
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -374,25 +375,13 @@ export function Contact() {
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    let isMounted = true;
-
     // Initialize EmailJS
     const publicKey =
-      process.env.REACT_APP_EMAILJS_PUBLIC_KEY || "YOUR_PUBLIC_KEY_HERE";
+      process.env.REACT_APP_EMAILJS_PUBLIC_KEY || "";
     emailjs.init(publicKey);
-
-    const loadContactData = async () => {
-      const data = await getData("siteContent", "contact");
-      if (isMounted) setContactData(data);
-    };
-
-    loadContactData();
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
-  if (!contactData) {
+  if (!loaded || !contactData) {
     return (
       <Section id="contact">
         <OrbLeft />

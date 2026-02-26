@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { Briefcase, Calendar, MapPin, CheckCircle2, ChevronDown } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   gradientTextMixin,
   badgeMixin,
   sectionDividerTop,
   sectionDividerBottom,
 } from '../styles/mixins';
-import { getData } from '../firebase/firestore';
+import { useSiteContent } from '../context/SiteContentContext';
 import { ExperienceSkeletonLayout } from './SkeletonLoader';
 import type { ExperienceDoc } from '../interfaces/firestore.interface';
 
@@ -430,24 +430,11 @@ function LogoDisplay({ image, initials, logoGradStart, logoGradEnd, isOpen }: Lo
 }
 
 export function Experience() {
-  const [experienceData, setExperienceData] = useState<ExperienceDoc | null>(null);
+  const { docs, loaded } = useSiteContent();
+  const experienceData = (docs.experience as ExperienceDoc | null) || null;
   const [openId, setOpenId] = useState<number | null>(1);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadExperienceData = async () => {
-      const data = await getData('siteContent', 'experience');
-      if (isMounted) setExperienceData(data);
-    };
-
-    loadExperienceData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (!experienceData) {
+  if (!loaded || !experienceData) {
     return (
       <Section id="experience">
         <OrbTop />

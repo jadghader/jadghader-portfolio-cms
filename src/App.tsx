@@ -13,6 +13,7 @@ import { AppThemeProvider } from "./context/ThemeContext";
 import { CustomCursor } from "./components/CustomCursor";
 import { CMSGuard } from "./components/CMSGuard";
 import { CMSPage } from "./components/CMSPage";
+import { SiteContentProvider } from "./context/SiteContentContext";
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -30,26 +31,30 @@ export default function App() {
         <Route
           path="/"
           element={
-            <PageWrapper>
-              <CustomCursor />
-              <Navigation />
-              <FloatingSocial />
-              <Hero />
-              <About />
-              <Experience />
-              <Projects />
-              <Skills />
-              <Contact />
-              <Footer />
-            </PageWrapper>
+            <SiteContentProvider>
+              <PageWrapper>
+                <CustomCursor />
+                <Navigation />
+                <FloatingSocial />
+                <Hero />
+                <About />
+                <Experience />
+                <Projects />
+                <Skills />
+                <Contact />
+                <Footer />
+              </PageWrapper>
+            </SiteContentProvider>
           }
         />
         <Route
           path="/cms"
           element={
-            <CMSGuard>
-              <CMSPage />
-            </CMSGuard>
+            <SiteContentProvider>
+              <CMSGuard>
+                <CMSPage />
+              </CMSGuard>
+            </SiteContentProvider>
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Create .env.local with EmailJS secrets
+      - name: Create .env.local with app secrets
         run: |
           cat > .env.local << EOF
           REACT_APP_EMAILJS_PUBLIC_KEY=${{ secrets.REACT_APP_EMAILJS_PUBLIC_KEY }}

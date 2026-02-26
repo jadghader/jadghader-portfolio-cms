@@ -10,7 +10,6 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 
-
 export const getData = async (
   collection: string,
   docId: string

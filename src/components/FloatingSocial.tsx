@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { Github, Linkedin } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { gradientBgMixin } from '../styles/mixins';
-import { getData } from '../firebase/firestore';
+import { useSiteContent } from '../context/SiteContentContext';
 import type { HeroDoc } from '../interfaces/firestore.interface';
 
 // ─── Styled Components ────────────────────────────────────────────────────────
@@ -86,23 +86,10 @@ const PeekBar = styled(motion.div)`
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function FloatingSocial() {
-  const [heroData, setHeroData] = useState<HeroDoc | null>(null);
+  const { docs } = useSiteContent();
+  const heroData = (docs.hero as HeroDoc | null) || null;
   const [pastHero, setPastHero] = useState(false);
   const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadHeroData = async () => {
-      const data = await getData('siteContent', 'hero');
-      if (isMounted) setHeroData(data);
-    };
-
-    loadHeroData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   useEffect(() => {
     const handler = () => {

@@ -1,7 +1,6 @@
 import styled, { css } from "styled-components";
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail } from "lucide-react";
-import { useState, useEffect } from "react";
 import {
   gradientTextMixin,
   gradientBgMixin,
@@ -11,7 +10,7 @@ import {
   ghostButtonMixin,
 } from "../styles/mixins";
 import { ImageWithFallback } from "./ImageWithFallback";
-import { getData } from "../firebase/firestore";
+import { useSiteContent } from "../context/SiteContentContext";
 import { HeroSkeletonLayout } from "./SkeletonLoader";
 import type { HeroDoc } from "../interfaces/firestore.interface";
 
@@ -313,23 +312,10 @@ const ScrollDot = styled(motion.div)`
 const imageUrl = `${process.env.PUBLIC_URL}/images/Jad-Ghader.jpeg`;
 
 export function Hero() {
-  const [heroData, setHeroData] = useState<HeroDoc | null>(null);
+  const { docs, loaded } = useSiteContent();
+  const heroData = (docs.hero as HeroDoc | null) || null;
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadHeroData = async () => {
-      const data = await getData("siteContent", "hero");
-      if (isMounted) setHeroData(data);
-    };
-
-    loadHeroData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (!heroData) {
+  if (!loaded || !heroData) {
     return (
       <Section id="home">
         <OrbA />

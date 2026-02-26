@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { ExternalLink, Github, Play } from "lucide-react";
-import { useState, useEffect } from "react";
 import {
   gradientTextMixin,
   badgeMixin,
@@ -9,7 +8,7 @@ import {
   sectionDividerBottom,
 } from "../styles/mixins";
 import { ImageWithFallback } from "./ImageWithFallback";
-import { getData } from "../firebase/firestore";
+import { useSiteContent } from "../context/SiteContentContext";
 import { ProjectSkeletonLayout } from "./SkeletonLoader";
 import type { ProjectsDoc } from "../interfaces/firestore.interface";
 
@@ -241,23 +240,10 @@ const Tag = styled.span`
 // ─── Component ───────────────────────────────────────────────────────────���────
 
 export function Projects() {
-  const [projectsData, setProjectsData] = useState<ProjectsDoc | null>(null);
+  const { docs, loaded } = useSiteContent();
+  const projectsData = (docs.projects as ProjectsDoc | null) || null;
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadProjectsData = async () => {
-      const data = await getData("siteContent", "projects");
-      if (isMounted) setProjectsData(data);
-    };
-
-    loadProjectsData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (!projectsData) {
+  if (!loaded || !projectsData) {
     return (
       <Section id="projects">
         <Container>
