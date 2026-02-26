@@ -21,13 +21,23 @@ export function useTheme() {
  * Detects the user's theme preference from:
  * 1. localStorage (if previously set)
  * 2. system preference (prefers-color-scheme)
+ *
+ * Safe to call in non-browser environments.
  */
 function detectThemePreference(): boolean {
-  const saved = localStorage.getItem('sc-theme');
-  if (saved) {
-    return saved === 'dark';
+  if (typeof window === 'undefined') {
+    return false;
   }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  try {
+    const saved = window.localStorage.getItem('sc-theme');
+    if (saved) {
+      return saved === 'dark';
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  } catch {
+    return false;
+  }
 }
 
 export function AppThemeProvider({ children }: { children: ReactNode }) {

@@ -100,15 +100,14 @@ export function FloatingSocial() {
   }, []);
 
   // Filter out mail and get only social links
-  const socialLinks = heroData?.socialLinks?.filter(link => !link.url?.startsWith('mailto:')) || [];
+  const socialLinks =
+    heroData?.socialLinks?.filter(
+      (link) => link.url && !link.url.startsWith('mailto:')
+    ) || [];
 
   const socialIconMap: Record<string, React.ReactNode> = {
     Github: <Github size={18} />,
     Linkedin: <Linkedin size={18} />,
-  };
-
-  const handleSocialClick = (url: string) => {
-    window.open(url, '_blank');
   };
 
   if (!pastHero) return null;
@@ -125,8 +124,10 @@ export function FloatingSocial() {
         {socialLinks.map(({ name, url, icon }, i) => (
           <IconRow
             key={name}
-            as="button"
-            onClick={() => handleSocialClick(url)}
+            as="a"
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label={name}
             initial={{ x: 60, opacity: 0 }}
             animate={{ x: expanded ? 0 : 44, opacity: 1 }}

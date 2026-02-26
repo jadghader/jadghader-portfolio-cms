@@ -1,8 +1,27 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { getData } from "../firebase/firestore";
 import type { CMSDocId } from "../utils/cmsValidation";
+import type {
+  NavbarDoc,
+  HeroDoc,
+  AboutDoc,
+  ExperienceDoc,
+  ProjectsDoc,
+  SkillsDoc,
+  ContactDoc,
+  FooterDoc,
+} from "../interfaces/firestore.interface";
 
-export type SiteContentMap = Partial<Record<CMSDocId, any>>;
+export type SiteContentMap = {
+  navbar?: NavbarDoc | null;
+  hero?: HeroDoc | null;
+  about?: AboutDoc | null;
+  experience?: ExperienceDoc | null;
+  projects?: ProjectsDoc | null;
+  skills?: SkillsDoc | null;
+  contact?: ContactDoc | null;
+  footer?: FooterDoc | null;
+};
 
 const docIds: CMSDocId[] = [
   "navbar",
@@ -18,7 +37,7 @@ const docIds: CMSDocId[] = [
 interface SiteContentContextValue {
   docs: SiteContentMap;
   loaded: boolean;
-  refreshDoc: (docId: CMSDocId) => Promise<any | null>;
+  refreshDoc: <T extends CMSDocId>(docId: T) => Promise<SiteContentMap[T] | null>;
   refreshAll: () => Promise<void>;
   setDocLocal: (docId: CMSDocId, data: any) => void;
 }
@@ -29,8 +48,8 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
   const [docs, setDocs] = useState<SiteContentMap>({});
   const [loaded, setLoaded] = useState(false);
 
-  const refreshDoc = async (docId: CMSDocId): Promise<any | null> => {
-    const data = await getData("siteContent", docId);
+  const refreshDoc = async <T extends CMSDocId>(docId: T): Promise<SiteContentMap[T] | null> => {
+    const data = (await getData("siteContent", docId)) as SiteContentMap[T] | null;
     setDocs((prev) => ({ ...prev, [docId]: data }));
     return data;
   };

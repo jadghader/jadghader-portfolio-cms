@@ -439,12 +439,19 @@ export function Contact() {
     setSubmitMessage("");
     setIsError(false);
 
-    try {
-      const serviceId =
-        process.env.REACT_APP_EMAILJS_SERVICE_ID || "YOUR_SERVICE_ID_HERE";
-      const templateId =
-        process.env.REACT_APP_EMAILJS_TEMPLATE_ID || "YOUR_TEMPLATE_ID_HERE";
+    const serviceId = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+    const templateId = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
 
+    if (!serviceId || !templateId) {
+      setIsError(true);
+      setSubmitMessage(
+        "The contact form is temporarily unavailable. Please reach out via email or WhatsApp."
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
       await emailjs.send(serviceId, templateId, {
         to_email: `${displayData.formSubmissionEmail}`,
         from_name: form.name,
@@ -466,6 +473,9 @@ export function Contact() {
       setIsSubmitting(false);
     }
   };
+
+  const phoneForWa = displayData.phone?.replace(/\s/g, "");
+  const hasWhatsApp = Boolean(phoneForWa);
 
   return (
     <Section id="contact">
@@ -510,18 +520,20 @@ export function Contact() {
               ))}
 
               {/* WhatsApp CTA */}
-              <WhatsAppBtn
-                href={`https://wa.me/${displayData.phone?.replace(/\s/g, "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <WhatsAppPulse>
-                  <WhatsAppIcon />
-                </WhatsAppPulse>
-                Chat on WhatsApp
-              </WhatsAppBtn>
+              {hasWhatsApp && (
+                <WhatsAppBtn
+                  href={`https://wa.me/${phoneForWa}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <WhatsAppPulse>
+                    <WhatsAppIcon />
+                  </WhatsAppPulse>
+                  Chat on WhatsApp
+                </WhatsAppBtn>
+              )}
             </InfoList>
           </InfoCol>
 

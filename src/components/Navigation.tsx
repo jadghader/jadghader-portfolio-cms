@@ -254,7 +254,8 @@ const navItems = [
 ];
 
 export function Navigation() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuMounted, setIsMenuMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { docs } = useSiteContent();
   const resumeUrl = docs.navbar?.resumeUrl || null;
@@ -267,30 +268,41 @@ export function Navigation() {
 
   const scrollTo = (href: string) => {
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
-    setIsOpen(false);
+    setIsMenuOpen(false);
+  };
+
+  const toggleMenu = () => {
+    if (!isMenuMounted || !isMenuOpen) {
+      setIsMenuMounted(true);
+      setIsMenuOpen(true);
+    } else {
+      setIsMenuOpen(false);
+    }
   };
 
   const handleResumeClick = () => {
-    if (resumeUrl) {
-      let downloadUrl = resumeUrl;
-      
-      // Convert Google Docs link to PDF export
-      const googleDocsMatch = resumeUrl.match(/\/document\/d\/([a-zA-Z0-9-_]+)/);
-      if (googleDocsMatch) {
-        const docId = googleDocsMatch[1];
-        downloadUrl = `https://docs.google.com/document/d/${docId}/export?format=pdf`;
-      }
-      
-      // Create a temporary anchor element to trigger download
-      const link = document.createElement('a');
+    if (!resumeUrl) {
+      alert("Resume URL not available");
+      return;
+    }
+
+    // If it's a Google Docs link, export as PDF and download
+    const googleDocsMatch = resumeUrl.match(/\/document\/d\/([a-zA-Z0-9-_]+)/);
+    if (googleDocsMatch) {
+      const docId = googleDocsMatch[1];
+      const downloadUrl = `https://docs.google.com/document/d/${docId}/export?format=pdf`;
+
+      const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = 'Jad-Ghader-Resume.pdf';
+      link.download = "Jad-Ghader-Resume.pdf";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } else {
-      alert("Resume URL not available");
+      return;
     }
+
+    // For non-Google links, open in a new tab so the user can view or save.
+    window.open(resumeUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -337,18 +349,22 @@ export function Navigation() {
         {/* Mobile actions */}
         <MobileActions>
           <ThemeToggle />
-          <HamburgerBtn onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X size={22} /> : <Menu size={22} />}
+          <HamburgerBtn onClick={toggleMenu}>
+            {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </HamburgerBtn>
         </MobileActions>
       </NavInner>
 
       {/* Mobile menu */}
-      {isOpen && (
+      {isMenuMounted && (
         <MobileMenu
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
+          initial={false}
+          animate={isMenuOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+          onAnimationComplete={() => {
+            if (!isMenuOpen) {
+              setIsMenuMounted(false);
+            }
+          }}
         >
           <MobileMenuInner>
             {navItems.map((item) => (
@@ -356,9 +372,7 @@ export function Navigation() {
                 {item.label}
               </MobileLink>
             ))}
-            <MobileResume
-              onClick={handleResumeClick}
-            >
+            <MobileResume onClick={handleResumeClick}>
               <Download size={16} />
               Download Resume
             </MobileResume>
