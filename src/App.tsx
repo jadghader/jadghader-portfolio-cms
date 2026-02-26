@@ -3,14 +3,15 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Navigation } from "./components/Navigation";
 import { Hero } from "./components/Hero";
 import { About } from "./components/About";
+import { Experience } from "./components/Experience";
 import { Projects } from "./components/Projects";
 import { Skills } from "./components/Skills";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
 import { FloatingSocial } from "./components/FloatingSocial";
 import { AppThemeProvider } from "./context/ThemeContext";
-import { Experience } from "./components/Experience";
 import { CustomCursor } from "./components/CustomCursor";
+import { CMSGuard } from "./components/CMSGuard";
 import { CMSPage } from "./components/CMSPage";
 
 const PageWrapper = styled.div`
@@ -43,7 +44,14 @@ export default function App() {
             </PageWrapper>
           }
         />
-        <Route path="/cms" element={<CMSPage />} />
+        <Route
+          path="/cms"
+          element={
+            <CMSGuard>
+              <CMSPage />
+            </CMSGuard>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppThemeProvider>

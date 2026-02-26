@@ -3,24 +3,20 @@ import styled, { keyframes } from "styled-components";
 import { motion } from "framer-motion";
 import {
   onIdTokenChanged,
+  type User,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
-  type User,
 } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import { getData, setData } from "../firebase/firestore";
 import { badgeMixin, gradientBgMixin, gradientTextMixin } from "../styles/mixins";
-
-type CMSDocId =
-  | "navbar"
-  | "hero"
-  | "about"
-  | "experience"
-  | "projects"
-  | "skills"
-  | "contact"
-  | "footer";
+import { isAllowedEditorEmail } from "../utils/cmsAccess";
+import {
+  type CMSDocId,
+  type ValidationIssue,
+  validateCMSDocument,
+} from "../utils/cmsValidation";
 
 const cmsDocItems: Array<{ id: CMSDocId; label: string }> = [
   { id: "navbar", label: "Navbar" },
@@ -348,8 +344,47 @@ const LoginErrorText = styled.p`
   font-size: 0.84rem;
 `;
 
-const normalizeEmail = (email?: string | null): string =>
-  (email || "").trim().toLowerCase();
+const ValidationPanel = styled.div`
+  margin: 0.25rem 1rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid ${({ theme }) => theme.borderCard};
+  background: ${({ theme }) => theme.background};
+  overflow: hidden;
+`;
+
+const ValidationHeader = styled.div`
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid ${({ theme }) => theme.borderCard};
+  font-size: 0.8rem;
+  font-weight: 700;
+`;
+
+const ValidationList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  display: grid;
+  gap: 0.35rem;
+`;
+
+const ValidationItem = styled.li<{ $level: "error" | "warning" }>`
+  font-size: 0.78rem;
+  color: ${({ theme, $level }) =>
+    $level === "error" ? "#dc2626" : theme.foregroundMuted};
+`;
+
+const MetaCard = styled.div`
+  margin: 0.2rem 1rem 0.85rem;
+  border: 1px solid ${({ theme }) => theme.borderCard};
+  border-radius: 12px;
+  background: ${({ theme }) => theme.background};
+  padding: 0.75rem;
+`;
+
+const MetaTitle = styled.h4`
+  margin: 0 0 0.45rem;
+  font-size: 0.8rem;
+`;
 
 export function CMSPage() {
   const [selectedDocId, setSelectedDocId] = useState<CMSDocId>("hero");
@@ -358,6 +393,7 @@ export function CMSPage() {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
   const [statusError, setStatusError] = useState(false);
+  const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([]);
   const [authLoading, setAuthLoading] = useState(true);
   const [authAction, setAuthAction] = useState<"email" | "google" | null>(null);
   const [authorizedUser, setAuthorizedUser] = useState<User | null>(null);
@@ -368,19 +404,26 @@ export function CMSPage() {
     return cmsDocItems.find((item) => item.id === selectedDocId)?.label || selectedDocId;
   }, [selectedDocId]);
 
-  const readAllowedEmails = useCallback(async (): Promise<string[]> => {
-    const docData = await getData("security", "contentEditors");
-    if (!docData || !Array.isArray(docData.emails)) return [];
-    return docData.emails
-      .filter((value: unknown) => typeof value === "string")
-      .map((value: string) => normalizeEmail(value));
+  const isUserAllowed = useCallback(async (user: User): Promise<boolean> => {
+    return isAllowedEditorEmail(user.email);
   }, []);
 
-  const isUserAllowed = useCallback(async (user: User): Promise<boolean> => {
-    const allowedEmails = await readAllowedEmails();
-    const currentEmail = normalizeEmail(user.email);
-    return !!currentEmail && allowedEmails.includes(currentEmail);
-  }, [readAllowedEmails]);
+  const parseAndValidate = useCallback(
+    (value: string): { parsed: unknown | null; issues: ValidationIssue[] } => {
+      try {
+        const parsed = JSON.parse(value);
+        return { parsed, issues: validateCMSDocument(selectedDocId, parsed) };
+      } catch (error) {
+        const syntaxMessage =
+          error instanceof SyntaxError ? error.message : "Invalid JSON payload.";
+        return {
+          parsed: null,
+          issues: [{ level: "error", path: "$", message: syntaxMessage }],
+        };
+      }
+    },
+    [selectedDocId]
+  );
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, async (currentUser) => {
@@ -420,13 +463,16 @@ export function CMSPage() {
     return () => unsubscribe();
   }, [isUserAllowed]);
 
-  const loadDoc = async (docId: CMSDocId) => {
+  const loadDoc = useCallback(async (docId: CMSDocId) => {
     setLoadingDoc(true);
     setStatus("");
     setStatusError(false);
     try {
       const data = await getData("siteContent", docId);
-      setEditorValue(JSON.stringify(data || {}, null, 2));
+      const nextText = JSON.stringify(data || {}, null, 2);
+      setEditorValue(nextText);
+      const validation = parseAndValidate(nextText);
+      setValidationIssues(validation.issues);
     } catch {
       setEditorValue("{}");
       setStatusError(true);
@@ -434,12 +480,12 @@ export function CMSPage() {
     } finally {
       setLoadingDoc(false);
     }
-  };
+  }, [parseAndValidate]);
 
   useEffect(() => {
     if (!authorizedUser) return;
     loadDoc(selectedDocId);
-  }, [authorizedUser, selectedDocId]);
+  }, [authorizedUser, loadDoc, selectedDocId]);
 
   const handleEmailLogin = async () => {
     setStatus("");
@@ -479,8 +525,21 @@ export function CMSPage() {
     setStatusError(false);
 
     try {
-      const parsed = JSON.parse(editorValue);
-      await setData("siteContent", selectedDocId, parsed);
+      const validation = parseAndValidate(editorValue);
+      setValidationIssues(validation.issues);
+
+      if (!validation.parsed) {
+        throw new SyntaxError("Invalid JSON payload.");
+      }
+
+      const hardErrors = validation.issues.filter((item) => item.level === "error");
+      if (hardErrors.length) {
+        setStatusError(true);
+        setStatus("Validation failed. Resolve errors before saving.");
+        return;
+      }
+
+      await setData("siteContent", selectedDocId, validation.parsed);
       setStatus(`Saved siteContent/${selectedDocId} successfully.`);
     } catch (error) {
       setStatusError(true);
@@ -669,16 +728,45 @@ export function CMSPage() {
                   <SecondaryBtn type="button" onClick={() => loadDoc(selectedDocId)}>
                     Reload
                   </SecondaryBtn>
-                  <PrimaryBtn type="button" onClick={handleSave} disabled={saving}>
+                  <PrimaryBtn
+                    type="button"
+                    onClick={handleSave}
+                    disabled={saving || validationIssues.some((item) => item.level === "error")}
+                  >
                     {saving ? "Saving..." : "Save"}
                   </PrimaryBtn>
                 </Actions>
               </Toolbar>
               <Editor
                 value={editorValue}
-                onChange={(e) => setEditorValue(e.target.value)}
+                onChange={(e) => {
+                  const nextValue = e.target.value;
+                  setEditorValue(nextValue);
+                  const validation = parseAndValidate(nextValue);
+                  setValidationIssues(validation.issues);
+                }}
                 spellCheck={false}
               />
+              <MetaCard>
+                <MetaTitle>Validation</MetaTitle>
+                <Small style={{ marginTop: 0 }}>
+                  {validationIssues.length
+                    ? `${validationIssues.filter((x) => x.level === "error").length} errors, ${validationIssues.filter((x) => x.level === "warning").length} warnings`
+                    : "No validation issues."}
+                </Small>
+                {validationIssues.length > 0 && (
+                  <ValidationPanel>
+                    <ValidationHeader>Document checks</ValidationHeader>
+                    <ValidationList>
+                      {validationIssues.slice(0, 10).map((issue, index) => (
+                        <ValidationItem key={`${issue.path}-${index}`} $level={issue.level}>
+                          [{issue.level.toUpperCase()}] {issue.path}: {issue.message}
+                        </ValidationItem>
+                      ))}
+                    </ValidationList>
+                  </ValidationPanel>
+                )}
+              </MetaCard>
               <Hint>
                 {loadingDoc
                   ? "Loading document..."

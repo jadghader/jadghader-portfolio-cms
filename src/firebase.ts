@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import type { FirebaseOptions } from "firebase/app";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -29,6 +30,14 @@ try {
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+
+const appCheckSiteKey = process.env.REACT_APP_RECAPTCHA_V3_SITE_KEY;
+if (typeof window !== "undefined" && appCheckSiteKey) {
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider(appCheckSiteKey),
+    isTokenAutoRefreshEnabled: true,
+  });
+}
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();

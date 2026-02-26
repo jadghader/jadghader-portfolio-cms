@@ -11,10 +11,6 @@ export interface Skill {
   icon: string;
 }
 
-export interface Link {
-  label: string;
-  href: string;
-}
 
 export interface Highlight {
   icon: string;
@@ -26,7 +22,6 @@ export interface Highlight {
 
 export interface NavbarDoc {
   resumeUrl: string;
-  navLinks: Link[];
 }
 
 // ─── Hero Document ─────────────────────────────────────────────────────────
@@ -108,7 +103,6 @@ export interface Project {
 }
 
 export interface ProjectsDoc {
-  sectionTitle: string;
   description: string;
   projects: Project[];
 }
@@ -128,56 +122,7 @@ export interface ContactDoc {
 
 // ─── Footer Document ───────────────────────────────────────────────────────
 
-export interface FooterSection {
-  title: string;
-  links: Link[];
-}
-
 export interface FooterDoc {
-  copyrightText: string;
   companyDescription: string;
-  sections: FooterSection[];
   socialLinks: SocialLink[];
-}
-
-// ─── Legacy Types (for backward compatibility) ────────────────────────────
-
-export interface skills {
-  icon: string;
-  name: string;
-}
-export interface skillsData {
-  category: string;
-  skills: skills[];
-}
-export interface skillsSection {
-  skillsData: skillsData[];
-}
-export interface projectsData {
-  description: string;
-  images: string[];
-  title: string;
-}
-export interface projectSection {
-  projects: projectsData[];
-}
-export interface socialLinks {
-  name: string;
-  url: string;
-}
-
-export interface heroSection {
-  heroText: string;
-  infoText: string;
-  socialLinks: socialLinks[];
-}
-export interface workExperienceData {
-  company: string;
-  description: string;
-  location: string;
-  title: string;
-  companyLogo: string;
-}
-export interface experienceSection {
-  workExperienceData: workExperienceData[];
 }

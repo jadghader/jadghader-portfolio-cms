@@ -89,6 +89,7 @@ Create a `.env.local` file in the project root:
 
 ```env
 REACT_APP_FIREBASE_CONFIG=base64_encoded_firebase_config_json
+REACT_APP_RECAPTCHA_V3_SITE_KEY=your_recaptcha_v3_site_key
 
 REACT_APP_EMAILJS_PUBLIC_KEY=your_public_key
 REACT_APP_EMAILJS_SERVICE_ID=your_service_id
@@ -143,7 +144,7 @@ Create this document in Firestore to control CMS access:
 }
 ```
 
-Only authenticated users whose verified email is listed in `emails` can write to `siteContent`.
+Only authenticated users whose email is listed in `emails` can write to `siteContent`.
 
 ### CMS Route
 
@@ -153,6 +154,11 @@ Only authenticated users whose verified email is listed in `emails` can write to
   - Google sign-in
 - Access control:
   - If signed-in user email is not in `security/contentEditors.emails`, user is signed out immediately.
+  - Route-level guard is applied before rendering the CMS editor.
+
+### App Check
+
+If `REACT_APP_RECAPTCHA_V3_SITE_KEY` is configured, Firebase App Check is initialized automatically in the browser.
 
 ## Deployment
 
