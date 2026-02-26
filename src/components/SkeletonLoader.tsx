@@ -155,18 +155,43 @@ export const ExperienceCardSkeleton = styled(SkeletonBase)`
 // ─── Skills Skeleton ───────────────────────────────────────────────────────────
 
 export const SkillSkeleton = styled(SkeletonBase)`
-  padding: 1.5rem;
-  border-radius: 16px;
-  min-height: 120px;
+  height: 2rem;
+  border-radius: 10px;
 `;
 
 export const SkillCategoryHeaderSkeleton = styled.div`
-  margin-bottom: 1.5rem;
+  border-radius: 20px;
+  border: 1px solid ${({ theme }) => theme.borderCard};
+  background: ${({ theme }) => theme.backgroundCard};
+  padding: 1.75rem;
+  min-height: 290px;
 `;
 
 export const SkillCategoryTitleSkeleton = styled(SkeletonTitle)`
-  width: 40%;
-  margin-bottom: 1rem;
+  width: 72%;
+  height: 1.1rem;
+  margin: 0 auto 1.25rem;
+`;
+
+export const SkillIconSkeleton = styled(SkeletonBase)`
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  margin: 0 auto 1rem;
+`;
+
+export const SkillDividerSkeleton = styled(SkeletonBase)`
+  height: 1px;
+  width: 92%;
+  margin: 0 auto 1.25rem;
+  border-radius: 999px;
+`;
+
+export const SkillTagsSkeleton = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
 `;
 
 // ─── About Skeleton ───────────────────────────────────────────────────────────
@@ -197,22 +222,97 @@ export const AboutContentSkeleton = styled.div`
 
 export const ContactInputSkeleton = styled(SkeletonBase)`
   width: 100%;
-  height: 3rem;
+  height: 2.9rem;
   border-radius: 12px;
-  margin-bottom: 1rem;
+`;
+
+export const ContactLabelSkeleton = styled(SkeletonBase)`
+  width: 90px;
+  height: 0.85rem;
+  border-radius: 8px;
 `;
 
 export const ContactButtonSkeleton = styled(SkeletonBase)`
   width: 100%;
-  height: 3rem;
-  border-radius: 12px;
+  height: 3.05rem;
+  border-radius: 14px;
 `;
 
 export const ContactInfoSkeleton = styled(SkeletonBase)`
   width: 100%;
-  height: 5rem;
+  height: 3.9rem;
+  border-radius: 16px;
+  padding: 0.5rem 0.7rem;
+`;
+
+export const ContactInfoWrapSkeleton = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+`;
+
+export const ContactInfoIconSkeleton = styled(SkeletonBase)`
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  flex-shrink: 0;
+`;
+
+export const ContactInfoTextSkeleton = styled.div`
+  flex: 1;
+  display: grid;
+  gap: 0.45rem;
+`;
+
+export const ContactFormSkeleton = styled.div`
+  border-radius: 24px;
+  border: 1px solid ${({ theme }) => theme.borderCard};
+  background: ${({ theme }) => theme.backgroundCard};
+  padding: 2.5rem;
+  min-height: 520px;
+`;
+
+export const ContactFormRowSkeleton = styled.div`
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+
+  @media (min-width: 480px) {
+    grid-template-columns: 1fr 1fr;
+  }
+`;
+
+export const ContactFieldSkeleton = styled.div`
+  display: grid;
+  gap: 0.45rem;
+`;
+
+export const ContactInfoColumnSkeleton = styled.div`
+  display: grid;
+  gap: 16px;
+`;
+
+export const ContactInfoTitleSkeleton = styled(SkeletonTitle)`
+  width: 58%;
+  height: 1.6rem;
+  margin: 0 0 0.55rem;
+`;
+
+export const ContactInfoDescSkeleton = styled.div`
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 1.25rem;
+
+  ${SkeletonText} {
+    height: 0.92rem;
+  }
+`;
+
+export const ContactWhatsAppSkeleton = styled(SkeletonBase)`
+  width: 100%;
+  height: 3.05rem;
   border-radius: 12px;
-  margin-bottom: 1rem;
 `;
 
 // ─── Hero Skeleton ────────────────────────────────────────────────────────────
@@ -325,12 +425,17 @@ export function SkillsSkeletonLayout({ count = 4 }: SkillsSkeletonLayoutProps) {
     <>
       {Array.from({ length: count }).map((_, i) => (
         <SkillCategoryHeaderSkeleton key={i}>
+          <SkillIconSkeleton />
           <SkillCategoryTitleSkeleton />
-          <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, j) => (
-              <SkillSkeleton key={j} />
+          <SkillDividerSkeleton />
+          <SkillTagsSkeleton>
+            {Array.from({ length: 7 }).map((_, j) => (
+              <SkillSkeleton
+                key={j}
+                style={{ width: j % 3 === 0 ? "96px" : j % 2 === 0 ? "84px" : "74px" }}
+              />
             ))}
-          </div>
+          </SkillTagsSkeleton>
         </SkillCategoryHeaderSkeleton>
       ))}
     </>
@@ -368,16 +473,47 @@ export function ContactSkeletonLayout({ includeInfo = true }: ContactSkeletonLay
   return (
     <>
       {includeInfo && (
-        <div className="mb-8">
+        <ContactInfoColumnSkeleton>
+          <ContactInfoTitleSkeleton />
+          <ContactInfoDescSkeleton>
+            <SkeletonText />
+            <SkeletonText className="medium" />
+          </ContactInfoDescSkeleton>
           {Array.from({ length: 3 }).map((_, i) => (
-            <ContactInfoSkeleton key={i} />
+            <ContactInfoSkeleton key={i}>
+              <ContactInfoWrapSkeleton>
+                <ContactInfoIconSkeleton />
+                <ContactInfoTextSkeleton>
+                  <SkeletonText style={{ width: "35%", height: "0.7rem" }} />
+                  <SkeletonText style={{ width: "62%", height: "0.95rem" }} />
+                </ContactInfoTextSkeleton>
+              </ContactInfoWrapSkeleton>
+            </ContactInfoSkeleton>
           ))}
-        </div>
+          <ContactWhatsAppSkeleton />
+        </ContactInfoColumnSkeleton>
       )}
-      <ContactInputSkeleton />
-      <ContactInputSkeleton />
-      <ContactInputSkeleton style={{ height: '150px' }} />
-      <ContactButtonSkeleton />
+      <ContactFormSkeleton>
+        <ContactFormRowSkeleton>
+          <ContactFieldSkeleton>
+            <ContactLabelSkeleton />
+            <ContactInputSkeleton />
+          </ContactFieldSkeleton>
+          <ContactFieldSkeleton>
+            <ContactLabelSkeleton />
+            <ContactInputSkeleton />
+          </ContactFieldSkeleton>
+        </ContactFormRowSkeleton>
+        <ContactFieldSkeleton style={{ marginBottom: "1.25rem" }}>
+          <ContactLabelSkeleton />
+          <ContactInputSkeleton />
+        </ContactFieldSkeleton>
+        <ContactFieldSkeleton style={{ marginBottom: "1.25rem" }}>
+          <ContactLabelSkeleton />
+          <ContactInputSkeleton style={{ height: "8.2rem" }} />
+        </ContactFieldSkeleton>
+        <ContactButtonSkeleton />
+      </ContactFormSkeleton>
     </>
   );
 }
