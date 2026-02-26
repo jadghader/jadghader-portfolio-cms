@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function emailInAllowlist() {
+      return isSignedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email is string
+        && exists(/databases/$(database)/documents/security/contentEditors)
+        && request.auth.token.email in get(/databases/$(database)/documents/security/contentEditors).data.emails;
+    }
+
+    function canEditContent() {
+      return emailInAllowlist();
+    }
+
+    match /siteContent/{docId} {
+      allow read: if true;
+      allow create, update, delete: if canEditContent();
+    }
+
+    match /security/contentEditors {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /security/{docId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

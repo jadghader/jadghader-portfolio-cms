@@ -104,6 +104,7 @@ export interface Project {
   accentEnd: string;
   repoUrl?: string;
   liveUrl?: string;
+  watchUrl?: string;
 }
 
 export interface ProjectsDoc {

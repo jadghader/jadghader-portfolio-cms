@@ -88,9 +88,17 @@ npm install
 Create a `.env.local` file in the project root:
 
 ```env
+REACT_APP_FIREBASE_CONFIG=base64_encoded_firebase_config_json
+
 REACT_APP_EMAILJS_PUBLIC_KEY=your_public_key
 REACT_APP_EMAILJS_SERVICE_ID=your_service_id
 REACT_APP_EMAILJS_TEMPLATE_ID=your_template_id
+```
+
+Generate the value with:
+
+```bash
+echo -n '{"apiKey":"your_firebase_api_key","authDomain":"your_project.firebaseapp.com","projectId":"your_project_id","storageBucket":"your_project.firebasestorage.app","messagingSenderId":"your_sender_id","appId":"your_app_id","measurementId":"your_measurement_id"}' | base64
 ```
 
 ### 3) Run locally
@@ -133,6 +141,9 @@ npm run build
 firebase deploy --only hosting:prod
 ```
 
+Firestore security rules are versioned in `firestore.rules` and linked in `firebase.json`.
+
 ## License
 
-This project is licensed under the MIT License. See `LICENSE` for details.
+This project is licensed under the Jad Ghader Personal License v1.0.
+See `LICENSE` for details.

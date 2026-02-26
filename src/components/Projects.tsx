@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, Play } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
   gradientTextMixin,
@@ -335,6 +335,20 @@ export function Projects() {
                         whileTap={{ scale: 0.95 }}
                       >
                         <Github size={15} />
+                      </ActionBtn>
+                    )}
+
+                    {(p.watchUrl) && (
+                      <ActionBtn
+                        href={p.watchUrl }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.12 }}
+                        whileTap={{ scale: 0.95 }}
+                        aria-label={`Watch demo for ${p.title}`}
+                        title={`Watch demo: ${p.title}`}
+                      >
+                        <Play size={15} />
                       </ActionBtn>
                     )}
                   </OverlayActions>
