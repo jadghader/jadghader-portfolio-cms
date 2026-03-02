@@ -173,10 +173,3 @@ Typical deployment flow:
 npm run build
 firebase deploy --only hosting:prod
 ```
-
-Firestore security rules are versioned in `firestore.rules` and linked in `firebase.json`.
-
-## License
-
-This project is licensed under the Jad Ghader Personal License v1.0.
-See `LICENSE` for details.
